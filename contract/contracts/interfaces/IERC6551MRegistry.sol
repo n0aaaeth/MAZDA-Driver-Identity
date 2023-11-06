@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-interface IERC6551Registry {
+interface IERC6551MRegistry {
 
     event AccountCreated(
         address account,

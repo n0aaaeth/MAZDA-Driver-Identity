@@ -9,12 +9,12 @@ import "@openzeppelin/contracts/utils/cryptography/SignatureChecker.sol";
 
 import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
 import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import "./interfaces/IERC6551Account.sol";
+import "./interfaces/IERC6551MAccount.sol";
 
 import "./libs/MinimalReceiver.sol";
-import "./libs/ERC6551AccountLib.sol";
+import "./libs/ERC6551MAccountLib.sol";
 
-contract ERC6551Account is IERC165, IERC1271, IERC6551Account {
+contract ERC6551Account is IERC165, IERC1271, IERC6551MAccount {
     uint256 public nonce;
 
     // NFTを装着してるかどうかを管理する変数
@@ -53,7 +53,7 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551Account {
             uint256
         )
     {
-        return ERC6551AccountLib.token();
+        return ERC6551MAccountLib.token();
     }
 
     function owner() public view returns (address) {
@@ -65,7 +65,7 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551Account {
 
     function supportsInterface(bytes4 interfaceId) public pure returns (bool) {
         return (interfaceId == type(IERC165).interfaceId ||
-            interfaceId == type(IERC6551Account).interfaceId);
+            interfaceId == type(IERC6551MAccount).interfaceId);
     }
 
     function isValidSignature(bytes32 hash, bytes memory signature)
