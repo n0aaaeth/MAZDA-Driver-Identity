@@ -82,8 +82,32 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551MAccount {
         return "";
     }
 
-    // TODO:ユーザーのバリデーションが必要な気がする
+    // NFTの着脱を管理する関数
+    // Functions to manage NFT attachments and removals
     function setAsset(address collection, uint256 tokenId, bool state) external {
+        require(msg.sender == owner(),"Not Owner");
         asset[collection][tokenId] = state;
+    }
+
+    //NFTを受け取るために変更
+    //@notice receive ERC721
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    //@notice receive ERC1155
+    function onERC1155Received(
+        address,
+        address,
+        uint256,
+        uint256,
+        bytes memory
+    ) public virtual returns (bytes4) {
+        return this.onERC1155Received.selector;
     }
 }
