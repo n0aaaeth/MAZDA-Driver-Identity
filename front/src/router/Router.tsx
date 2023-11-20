@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Home } from "../pages/Home";
+import { Map } from "../pages/Map";
 
 const routs: {
   path: string;
@@ -8,7 +8,15 @@ const routs: {
 }[] = [
   {
     path: "/",
-    element: <Home />,
+    element: <Map />,
+  },
+  {
+    path: "/custom",
+    element: <Map />,
+  },
+  {
+    path: "/activity",
+    element: <Map />,
   },
   {
     path: "/auth",
@@ -21,9 +29,7 @@ export const Router: FC = () => {
     <BrowserRouter>
       <Routes>
         {routs.map((route) => {
-          return (
-            <Route key={route.path} path={route.path} element={route.element} />
-          );
+          return <Route key={route.path} path={route.path} element={route.element} />;
         })}
       </Routes>
     </BrowserRouter>

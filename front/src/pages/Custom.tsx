@@ -4,12 +4,12 @@ import { FC } from "react";
 import { useDiscloser } from "../hooks/useDiscloser";
 import { PrimaryModal } from "../component/modal/PrimaryModal";
 
-export const Home: FC = () => {
+export const Custom: FC = () => {
   const [isOpen, onClose] = useDiscloser(true);
 
   return (
     <PrimaryLayout>
-      <Box sx={{ bgcolor: "white" }}>HomeContent</Box>
+      <Box sx={{ bgcolor: "white" }}>CustomContent</Box>
       <PrimaryModal
         isOpen={isOpen}
         onClose={onClose}
