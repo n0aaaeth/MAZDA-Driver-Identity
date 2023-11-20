@@ -1,6 +1,8 @@
 import { FC } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Map } from "../pages/Map";
+import { MapComponent } from "../pages/MapComponent";
+import { Custom } from "../pages/Custom";
+import { Activity } from "../pages/Activity";
 
 const routs: {
   path: string;
@@ -8,15 +10,15 @@ const routs: {
 }[] = [
   {
     path: "/",
-    element: <Map />,
+    element: <MapComponent />,
   },
   {
     path: "/custom",
-    element: <Map />,
+    element: <Custom />,
   },
   {
     path: "/activity",
-    element: <Map />,
+    element: <Activity />,
   },
   {
     path: "/auth",
