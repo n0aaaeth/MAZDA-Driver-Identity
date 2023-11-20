@@ -11,6 +11,10 @@ export const Header: FC = () => {
       sx={{
         bgcolor: "primary.light",
         p: 1.5,
+        pl: 2,
+        position: "fixed",
+        top: 0,
+        width: "100vw",
       }}
     >
       <Stack direction="row" alignItems="center" spacing={1}>
