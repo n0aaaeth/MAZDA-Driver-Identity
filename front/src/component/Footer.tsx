@@ -3,7 +3,11 @@ import { FC } from "react";
 import ActivityIcon from "../assets/img/activity-icon.png";
 import CarIcon from "../assets/img/car-icon.png";
 import MapIcon from "../assets/img/map-icon.png";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { theme } from "../theme/theme";
+
+const secondaryMain = theme.palette.secondary.main;
+const primaryDark = theme.palette.primary.dark;
 
 type MenuContentType = {
   label: string;
@@ -36,7 +40,7 @@ const menuItemArray: MenuContentType[] = [
   {
     label: "マップ",
     icon: <IconWrapper src={MapIcon} alt="マップ" />,
-    path: "/map",
+    path: "/",
   },
   {
     label: "アクティビィティ",
@@ -52,7 +56,7 @@ const MenuItem: FC<
 > = ({ label, icon, onClick }) => {
   return (
     <Button onClick={onClick}>
-      <Stack spacing={0.5} alignItems="center">
+      <Stack spacing={0.3} alignItems="center">
         {icon}
         <Typography variant="caption" sx={{ color: "secondary.main" }}>
           {label}
@@ -64,14 +68,18 @@ const MenuItem: FC<
 
 export const Footer: FC = () => {
   const router = useNavigate();
+  const currentPath = useLocation().pathname;
   const gridValue = 12 / menuItemArray.length;
 
   return (
     <Grid
       container
       sx={{
-        p: 2,
+        position: "fixed",
+        bottom: 0,
+        pt: 0.5,
         bgcolor: "primary.dark",
+        width: "100vw",
       }}
     >
       {menuItemArray.map((item) => {
@@ -80,7 +88,21 @@ export const Footer: FC = () => {
           router(path);
         };
         return (
-          <Grid key={item.path} item xs={gridValue}>
+          <Grid
+            key={item.path}
+            item
+            xs={gridValue}
+            sx={
+              currentPath === path
+                ? {
+                    borderEndEndRadius: "3px",
+                    borderEndStartRadius: "3px",
+                    bgcolor: secondaryMain,
+                    boxShadow: `0px 35px 30px 20px ${primaryDark} inset`,
+                  }
+                : {}
+            }
+          >
             <Stack alignItems="center">
               <MenuItem label={label} icon={icon} onClick={changePath} />
             </Stack>
