@@ -1,6 +1,5 @@
 import { IconButton, Stack, Typography } from "@mui/material";
 import { FC } from "react";
-import AstartLogo from "../assets/img/astar-logo.png";
 import MenuIcon from "@mui/icons-material/Menu";
 
 export const Header: FC = () => {
@@ -26,7 +25,7 @@ export const Header: FC = () => {
           MAZDA Driver Identify
         </Typography>
         <img
-          src={AstartLogo}
+          src="../assets/astar-logo.png"
           alt="Astar"
           style={{
             height: "30px",

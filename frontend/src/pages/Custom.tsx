@@ -5,7 +5,7 @@ import { useDiscloser } from "../hooks/useDiscloser";
 import { PrimaryModal } from "../component/modal/PrimaryModal";
 
 export const Custom: FC = () => {
-  const [isOpen, onClose] = useDiscloser(true);
+  const [isOpen, onClose] = useDiscloser(false);
 
   return (
     <PrimaryLayout>

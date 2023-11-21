@@ -1,8 +1,5 @@
 import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
 import { FC } from "react";
-import ActivityIcon from "../assets/img/activity-icon.png";
-import CarIcon from "../assets/img/car-icon.png";
-import MapIcon from "../assets/img/map-icon.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import { theme } from "../theme/theme";
 
@@ -34,17 +31,17 @@ const IconWrapper: FC<{
 const menuItemArray: MenuContentType[] = [
   {
     label: "カスタム",
-    icon: <IconWrapper src={CarIcon} alt="カスタム" />,
+    icon: <IconWrapper src="../assets/car-icon.png" alt="カスタム" />,
     path: "/custom",
   },
   {
     label: "マップ",
-    icon: <IconWrapper src={MapIcon} alt="マップ" />,
+    icon: <IconWrapper src="../assets/map-icon.png" alt="マップ" />,
     path: "/map",
   },
   {
     label: "アクティビィティ",
-    icon: <IconWrapper src={ActivityIcon} alt="アクティビィティ" />,
+    icon: <IconWrapper src="../assets/activity-icon.png" alt="アクティビィティ" />,
     path: "/activity",
   },
 ];

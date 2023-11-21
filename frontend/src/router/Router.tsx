@@ -4,7 +4,7 @@ import { Map } from "../pages/Map";
 import { Custom } from "../pages/Custom";
 import { Activity } from "../pages/Activity";
 import { Auth } from "../pages/Auth";
-import { ModelSelect } from "../pages/ModelSelect";
+import { StartSetup } from "../pages/StartSetup";
 import { CreateTBA } from "../pages/CreateTBA";
 import { GetColor } from "../pages/GetColor";
 
@@ -18,7 +18,7 @@ const routs: {
   },
   {
     path: "/",
-    element: <ModelSelect />,
+    element: <StartSetup />,
   },
   {
     path: "/create-tba",

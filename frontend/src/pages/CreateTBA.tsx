@@ -1,8 +1,6 @@
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { FC } from "react";
 
-import carImage from "../assets/img/car-black.png";
-import AstartLogo from "../assets/img/astar-logo.png";
 import { useNavigate } from "react-router-dom";
 
 export const CreateTBA: FC = () => {
@@ -34,7 +32,7 @@ export const CreateTBA: FC = () => {
           MAZDA Driver Identify
         </Typography>
         <img
-          src={AstartLogo}
+          src="../assets/astar-logo.png"
           alt="Astar"
           style={{
             height: "30px",
@@ -50,7 +48,7 @@ export const CreateTBA: FC = () => {
           width: 200,
         }}
         alt="MAZDA car"
-        src={carImage}
+        src="../assets/car-black.png"
       />
        <Typography
           sx={{

@@ -1,6 +1,7 @@
-import { ThemeProvider } from "@mui/material";
+
 import { FC, ReactNode } from "react";
 import { theme } from "../theme/theme";
+import { ThemeProvider } from "@mui/material";
 
 type Props = {
   children: ReactNode;
