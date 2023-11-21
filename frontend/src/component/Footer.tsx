@@ -40,7 +40,7 @@ const menuItemArray: MenuContentType[] = [
   {
     label: "マップ",
     icon: <IconWrapper src={MapIcon} alt="マップ" />,
-    path: "/",
+    path: "/map",
   },
   {
     label: "アクティビィティ",

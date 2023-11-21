@@ -5,7 +5,7 @@ import carImage from "../assets/img/car-black.png";
 import AstartLogo from "../assets/img/astar-logo.png";
 import { useNavigate } from "react-router-dom";
 
-export const ModelSelect: FC = () => {
+export const GetColor: FC = () => {
   const router = useNavigate();
   return (
     <Container
@@ -75,9 +75,9 @@ export const ModelSelect: FC = () => {
             color: "secondary.main",
           },
         }}
-        onClick={() => router("/create-tba")}
+        onClick={() => router("/custom")}
       >
-        モデルを決定
+        TBAに初期カラーを取得/設定
       </Button>
     </Container>
   );

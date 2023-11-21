@@ -3,23 +3,33 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Map } from "../pages/Map";
 import { Custom } from "../pages/Custom";
 import { Activity } from "../pages/Activity";
-import { Login } from "../pages/Login";
+import { Auth } from "../pages/Auth";
 import { ModelSelect } from "../pages/ModelSelect";
+import { CreateTBA } from "../pages/CreateTBA";
+import { GetColor } from "../pages/GetColor";
 
 const routs: {
   path: string;
   element: JSX.Element;
 }[] = [
   {
-    path: "/login",
-    element: <Login />,
-  },
-  {
-    path: "/model-select",
-    element: <ModelSelect />,
+    path: "/auth",
+    element: <Auth />,
   },
   {
     path: "/",
+    element: <ModelSelect />,
+  },
+  {
+    path: "/create-tba",
+    element: <CreateTBA />,
+  },
+  {
+    path: "/get-color",
+    element: <GetColor/>,
+  },
+  {
+    path: "/map",
     element: <Map />,
   },
   {
@@ -29,10 +39,6 @@ const routs: {
   {
     path: "/activity",
     element: <Activity />,
-  },
-  {
-    path: "/auth",
-    element: <>auth</>,
   },
 ];
 

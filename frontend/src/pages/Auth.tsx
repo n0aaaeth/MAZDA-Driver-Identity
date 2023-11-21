@@ -5,7 +5,7 @@ import carImage from "../assets/img/car-black.png";
 import AstartLogo from "../assets/img/astar-logo.png";
 import { useNavigate } from "react-router-dom";
 
-export const Login: FC = () => {
+export const Auth: FC = () => {
     const router = useNavigate();
   return (
 
@@ -65,7 +65,7 @@ export const Login: FC = () => {
             color: "secondary.main",
           },
         }}
-        onClick={() => router("/model-select")}
+        onClick={() => router("/")}
       >
         ログイン
       </Button>
