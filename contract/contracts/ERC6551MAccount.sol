@@ -14,22 +14,28 @@ import "./interfaces/IERC6551MAccount.sol";
 import "./libs/MinimalReceiver.sol";
 import "./libs/ERC6551MAccountLib.sol";
 
-contract ERC6551Account is IERC165, IERC1271, IERC6551MAccount {
+import {
+    ERC2771Context
+} from "@gelatonetwork/relay-context/contracts/vendor/ERC2771Context.sol";
+
+contract ERC6551Account is IERC165, IERC1271, IERC6551MAccount, ERC2771Context  {
     uint256 public nonce;
 
-    // NFTを装着してるかどうかを管理する変数
-    // Variable that controls whether that NFT is attached or not.
     mapping(address => mapping(uint256 => bool)) public asset;
 
     receive() external payable {}
+
+       constructor(address _trustedForwarder) 
+        ERC2771Context(_trustedForwarder) 
+    {}
 
     function executeCall(
         address to,
         uint256 value,
         bytes calldata data
     ) external payable returns (bytes memory result) {
-        require(msg.sender == owner(), "Not token owner");
-
+        address msgSender = ERC2771Context._msgSender();
+        require(msgSender == owner(), "Not token owner");
         ++nonce;
 
         emit TransactionExecuted(to, value, data);
@@ -82,15 +88,16 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551MAccount {
         return "";
     }
 
-    // NFTの着脱を管理する関数
-    // Functions to manage NFT attachments and removals
     function setAsset(address collection, uint256 tokenId, bool state) external {
-        require(msg.sender == owner(),"Not Owner");
+        address msgSender = ERC2771Context._msgSender();
+        require(msgSender == owner(),"Not Owner");
         asset[collection][tokenId] = state;
     }
 
-    //NFTを受け取るために変更
-    //@notice receive ERC721
+    function isAssetSet(address collection, uint256 tokenId) external view returns (bool) {
+        return asset[collection][tokenId];
+    }
+
     function onERC721Received(
         address,
         address,
@@ -100,7 +107,6 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551MAccount {
         return this.onERC721Received.selector;
     }
 
-    //@notice receive ERC1155
     function onERC1155Received(
         address,
         address,
@@ -110,4 +116,5 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551MAccount {
     ) public virtual returns (bytes4) {
         return this.onERC1155Received.selector;
     }
+
 }

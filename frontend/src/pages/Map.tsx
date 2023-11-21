@@ -4,7 +4,7 @@ import { FC } from "react";
 import { useDiscloser } from "../hooks/useDiscloser";
 import { PrimaryModal } from "../component/modal/PrimaryModal";
 
-export const MapComponent: FC = () => {
+export const Map: FC = () => {
   const [isOpen, onClose] = useDiscloser(true);
 
   return (

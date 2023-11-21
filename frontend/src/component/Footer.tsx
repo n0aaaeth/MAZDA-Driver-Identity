@@ -1,4 +1,4 @@
-import { Button, Grid, Stack, Typography } from "@mui/material";
+import { Box, Button, Container, Grid, Stack, Typography } from "@mui/material";
 import { FC } from "react";
 import ActivityIcon from "../assets/img/activity-icon.png";
 import CarIcon from "../assets/img/car-icon.png";
@@ -24,8 +24,8 @@ const IconWrapper: FC<{
       src={src}
       alt={alt}
       style={{
-        height: "35px",
-        width: "35px",
+        height: "30px",
+        width: "30px",
       }}
     />
   );
@@ -72,43 +72,46 @@ export const Footer: FC = () => {
   const gridValue = 12 / menuItemArray.length;
 
   return (
-    <Grid
-      container
+    <Box
       sx={{
         position: "fixed",
         bottom: 0,
-        pt: 0.5,
-        bgcolor: "primary.dark",
-        width: "100vw",
+        left: 0,
+        right: 0,
+        width: "100%",
       }}
     >
-      {menuItemArray.map((item) => {
-        const { label, icon, path } = item;
-        const changePath = () => {
-          router(path);
-        };
-        return (
-          <Grid
-            key={item.path}
-            item
-            xs={gridValue}
-            sx={
-              currentPath === path
-                ? {
-                    borderEndEndRadius: "3px",
-                    borderEndStartRadius: "3px",
-                    bgcolor: secondaryMain,
-                    boxShadow: `0px 35px 30px 20px ${primaryDark} inset`,
-                  }
-                : {}
-            }
-          >
-            <Stack alignItems="center">
-              <MenuItem label={label} icon={icon} onClick={changePath} />
-            </Stack>
-          </Grid>
-        );
-      })}
-    </Grid>
+      <Container maxWidth="xs" disableGutters sx={{ p: 0 }}>
+        <Grid container sx={{ bgcolor: "primary.dark" }}>
+          {menuItemArray.map((item) => {
+            const { label, icon, path } = item;
+            const changePath = () => {
+              router(path);
+            };
+            return (
+              <Grid
+                key={item.path}
+                item
+                xs={gridValue}
+                sx={
+                  currentPath === path
+                    ? {
+                        borderEndEndRadius: "3px",
+                        borderEndStartRadius: "3px",
+                        bgcolor: secondaryMain,
+                        boxShadow: `0px 35px 30px 20px ${primaryDark} inset`,
+                      }
+                    : {}
+                }
+              >
+                <Stack alignItems="center">
+                  <MenuItem label={label} icon={icon} onClick={changePath} />
+                </Stack>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Container>
+    </Box>
   );
 };

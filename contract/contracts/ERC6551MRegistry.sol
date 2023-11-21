@@ -4,8 +4,16 @@ pragma solidity ^0.8.9;
 import "@openzeppelin/contracts/utils/Create2.sol";
 import "./interfaces/IERC6551MRegistry.sol";
 
-contract ERC6551Registry is IERC6551MRegistry {
+import {
+    ERC2771Context
+} from "@gelatonetwork/relay-context/contracts/vendor/ERC2771Context.sol";
+
+contract ERC6551Registry is IERC6551MRegistry, ERC2771Context {
     error InitializationFailed();
+
+    constructor(address _trustedForwarder)
+        ERC2771Context(_trustedForwarder)
+    {}
 
     function createAccount(
         address implementation,
@@ -72,4 +80,13 @@ contract ERC6551Registry is IERC6551MRegistry {
                 abi.encode(salt_, chainId_, tokenContract_, tokenId_)
             );
     }
+
+   function _msgSender() internal view override returns (address) {
+        return ERC2771Context._msgSender();
+    }
+    
+    function _msgData() internal view override returns (bytes calldata) {
+        return ERC2771Context._msgData();
+    }
+    
 }

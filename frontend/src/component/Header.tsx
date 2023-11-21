@@ -10,14 +10,11 @@ export const Header: FC = () => {
       justifyContent="space-between"
       sx={{
         bgcolor: "primary.light",
-        p: 1.5,
-        pl: 2,
-        position: "fixed",
+        p: 1,
         top: 0,
-        width: "100vw",
       }}
     >
-      <Stack direction="row" alignItems="center" spacing={1}>
+      <Stack direction="row" alignItems="center" spacing={1} >
         <Typography
           variant="h6"
           sx={{

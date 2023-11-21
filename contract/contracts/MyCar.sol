@@ -4,20 +4,27 @@ pragma solidity ^0.8.9;
 import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
+import {
+    ERC2771Context
+} from "@gelatonetwork/relay-context/contracts/vendor/ERC2771Context.sol";
 
-contract myCar is ERC721A, Ownable {
+contract MyCar is ERC721A, ERC2771Context, Ownable { 
     using Strings for uint256;
 
-    //@param baseURI: url of base
     string public baseURI;
 
-    constructor() ERC721A("myCar", "MYCAR") Ownable(msg.sender) {}
+    event TokenMinted(address indexed to, uint256 indexed tokenId);
+
+    constructor(address _trustedForwarder) 
+        ERC721A("MyCar", "MYCAR")
+        ERC2771Context(_trustedForwarder) 
+        Ownable(msg.sender)
+    {}
 
     function tokenURI(uint256 tokenId)
         public
         view
-        virtual
-        override
+        override(ERC721A)
         returns (string memory)
     {
         string memory currentBaseURI = _baseURI();
@@ -33,23 +40,29 @@ contract myCar is ERC721A, Ownable {
                 : "";
     }
 
-    function mint() public onlyOwner {
-        //interaction
-        _mint(msg.sender, 1);
+    function mint() public {
+        uint256 tokenId = _nextTokenId(); 
+        _mint(_msgSender(), 1); 
+        emit TokenMinted(_msgSender(), tokenId);
     }
 
-    //@notice get baseURI
-    function _baseURI() internal view virtual override returns (string memory) {
+    function _baseURI() internal view override returns (string memory) {
         return baseURI;
     }
 
-    //SET
-    //@notice set BaseURI
     function setBaseURI(string memory _newBaseURI) public onlyOwner {
         baseURI = _newBaseURI;
     }
 
-    function _startTokenId() internal view override returns (uint256) {
+    function _startTokenId() internal pure override returns (uint256) {
         return 1;
+    }
+
+    function _msgSender() internal view override(Context, ERC2771Context) returns (address) {
+        return ERC2771Context._msgSender();
+    }
+
+    function _msgData() internal view override(Context, ERC2771Context) returns (bytes calldata) {
+        return ERC2771Context._msgData();
     }
 }
