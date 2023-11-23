@@ -12,6 +12,7 @@ export const createTBA = async ({
     try {
       const contract = new Contract(config.erc6551RegistryAddress, erc6551RegistryAbi, userState.provider.getSigner());
 
+      // console.log(userHoldTokenId);
       const { data: dataCounter } =
         await contract!.populateTransaction.createAccount(
           config.erc6551AccountAddress,

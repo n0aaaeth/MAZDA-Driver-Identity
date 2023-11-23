@@ -16,7 +16,7 @@ export const getSessionKey = async ({userState}: any) => {
     const hash = utils.keccak256(packed);
 
     const session = await contract.sessionKeys(hash);
-    console.log(session);
+    // console.log("Session Key:", session);
 
     return session;
   };

@@ -15,10 +15,14 @@ import { getTBA } from "../services/getTBA";
 import { mintColorNFT } from "../services/mintColor";
 import { setAsset } from "../services/setAsset";
 import { isAssetSet } from "../services/getIsAsset";
+import { useUpdateState } from "../hooks/useUpdateGlobalState";
+import { useNavigate } from "react-router-dom";
 
 export const StartSetup: FC = () => {
   const userState = useRecoilValue(userStateAtom);
+  const { updateUserState } = useUpdateState();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate =useNavigate();
 
   const [tokenMintedId, setTokenMintedId] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -48,6 +52,7 @@ export const StartSetup: FC = () => {
 
   const handleMintMyCarNFT = async () => {
     setLoading(true);
+    console.log("Task start");
     try {
       const response = await mintMyCarNFT({
         userState: userState,
@@ -55,6 +60,7 @@ export const StartSetup: FC = () => {
       const status = await fetchGelatoRelayStatus(response);
       console.log("Task succeeded:", status);
       const tokenId = await listenForTokenMinted();
+      console.log(`Minted Token ID: ${tokenId}`);
       setTokenMintedId(Number(tokenId));
       openSnackbar(
         `モデルの取得に成功しました : Token ID ${tokenId}`,
@@ -70,6 +76,7 @@ export const StartSetup: FC = () => {
 
   const handleCreateTBA = async () => {
     setLoading(true);
+    console.log("Task start");
     try {
       const response = await createTBA({
         userState: userState,
@@ -81,8 +88,12 @@ export const StartSetup: FC = () => {
         userHoldTokenId: Number(tokenMintedId),
       });
       setTba(tba);
+      updateUserState({
+        tba: tba
+      })
       console.log("Task succeeded:", status);
-      openSnackbar(`TBAの作成に成功しました : Address ${tba}`, "success");
+      console.log(`Token Bound Accounts: ${tba}`);
+      openSnackbar(`TBAの作成に成功しました: ${tba}`, "success");
     } catch (error) {
       console.error("An error occurred:", error);
       openSnackbar("TBAの作成に失敗しました", "error");
@@ -93,20 +104,21 @@ export const StartSetup: FC = () => {
 
   const handleMintColorNFT = async () => {
     setLoading(true);
-    console.log(tba)
+    // console.log(tba)
+    console.log("Task start");
     try {
       const response = await mintColorNFT({
         userState: userState,
         to: tba,
-        tokenId: 1,
-        amount: 1,
+        tokenId: [1,2,3],
+        amount: [1,1,1],
       });
       const status = await fetchGelatoRelayStatus(response);
       console.log("Task succeeded:", status);
-      openSnackbar(`カラーNFTの取得に成功しました`, "success");
+      openSnackbar(`車体のボディーカラーNFTの取得に成功しました`, "success");
     } catch (error) {
       console.error("An error occurred:", error);
-      openSnackbar("カラーNFTの取得が失敗しました", "error");
+      openSnackbar("車体のカラーNFTの取得が失敗しました", "error");
     } finally {
       setLoading(false);
     }
@@ -114,12 +126,13 @@ export const StartSetup: FC = () => {
 
   const handleSetColorNFT = async () => {
     setLoading(true);
+    console.log("Task start");
     try {
       const response = await setAsset({
         userState: userState,
         tba: tba,
-        tokenId: 1,
-        state: true,
+        tokenId: [1,2,3],
+        state: [true,false,false],
       });
       const status = await fetchGelatoRelayStatus(response);
       console.log("Task succeeded:", status);
@@ -127,21 +140,20 @@ export const StartSetup: FC = () => {
         userState: userState,
         tba: tba,
         contractAddress: config.colorAddress,
-        tokenId: 1,
+        tokenId: [1, 2, 3],
       });
-      console.log(isSet)
+      // console.log(isSet)
       if (isSet) {
-        openSnackbar(`カラーNFTの装着に成功しました`, "success");
+        openSnackbar(`車体のボディーカラーNFTの装着に成功しました`, "success");
       }
     } catch (error) {
       console.error("An error occurred:", error);
-      openSnackbar("カラーNFTの装着が失敗しました", "error");
+      openSnackbar("車体のボディーカラーNFTの装着が失敗しました", "error");
     } finally {
       setLoading(false);
     }
   };
 
-  // Assuming createContractInstance is an async function that returns a Promise<Contract>
   const listenForTokenMinted = async (): Promise<string> => {
     return new Promise<string>(async (resolve, reject) => {
       try {
@@ -155,9 +167,9 @@ export const StartSetup: FC = () => {
         myCarContract.once(
           eventFilter,
           (to: string, tokenId: ethers.BigNumber) => {
-            console.log(
-              `Token with ID ${tokenId.toString()} was minted to address ${to}`
-            );
+            // console.log(
+            //   `Token with ID ${tokenId.toString()} was minted to address ${to}`
+            // );
             resolve(tokenId.toString()); 
           }
         );
@@ -180,6 +192,11 @@ export const StartSetup: FC = () => {
   //   });
   //   console.log(status)
   // };
+
+  const handleLogout = async () => {
+    await userState.web3auth?.logout();
+    navigate("/auth");
+  };
 
   return (
     <Container
@@ -252,6 +269,23 @@ export const StartSetup: FC = () => {
       >
         初期設定をはじめる
       </Button>
+     {/* <Button
+        variant="contained"
+        sx={{
+          border: "1px solid #929292",
+          color: "#929292",
+          width: "280px",
+          height: "45px",
+          borderRadius: "0px",
+          "&:hover": {
+            color: "secondary.main",
+          },
+        }}
+        onClick={handleLogout}
+      >
+        ログアアウト
+      </Button>  */}
+
       <StepModal
         isOpen={isModalOpen}
         onClose={handleCloseModal}

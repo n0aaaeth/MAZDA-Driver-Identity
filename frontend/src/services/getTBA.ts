@@ -20,7 +20,7 @@ export const getTBA = async ({
       1
     );
 
-    console.log("Account Address:", accountAddress);
+    // console.log("Account Address:", accountAddress);
     return accountAddress;
   } catch (error) {
     console.error("Error calling the account function:", error);

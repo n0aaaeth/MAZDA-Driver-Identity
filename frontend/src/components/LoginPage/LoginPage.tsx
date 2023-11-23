@@ -8,7 +8,7 @@ import AccountAbstraction, {
 import { GelatoRelayPack } from "zkatana-gelato-relay-kit";
 
 import { Web3Auth } from "@web3auth/modal";
-import { Box, Button, Flex, Heading, Switch } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading } from "@chakra-ui/react";
 import { useUpdateState } from "../../hooks/useUpdateGlobalState";
 import { useNavigate } from "react-router-dom";
 

@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Stack, Typography } from "@mui/material";
 import { FC, ReactNode } from "react";
 import { CommonModal } from "./CommonModal";
 
@@ -9,6 +9,8 @@ type Props = {
   titleLabel: string;
   buttonLabel: string;
   onSubmitClick: () => void;
+  isButtonDisabled?: boolean;
+  loading?: boolean;
 };
 
 export const PrimaryModal: FC<Props> = ({
@@ -18,6 +20,8 @@ export const PrimaryModal: FC<Props> = ({
   titleLabel,
   buttonLabel,
   onSubmitClick,
+  isButtonDisabled = false,
+  loading = false
 }) => {
   return (
     <CommonModal isOpen={isOpen} onClose={onClose}>
@@ -39,9 +43,18 @@ export const PrimaryModal: FC<Props> = ({
             p: 3,
           }}
         >
-          <Box sx={{ p: 2 }}>{children}</Box>
-          <Button variant="contained" onClick={onSubmitClick}>
-            {buttonLabel}
+          <Box sx={{ p: 2, mb: 3 }}>{children}</Box>
+          <Button
+            variant="contained"
+            onClick={onSubmitClick}
+            disabled={isButtonDisabled || loading} 
+            sx={{ mt: 2 }}
+          >
+            {loading ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              buttonLabel
+            )}
           </Button>
         </Stack>
       </Stack>

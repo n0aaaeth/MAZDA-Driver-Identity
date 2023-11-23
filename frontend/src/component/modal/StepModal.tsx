@@ -29,15 +29,31 @@ type StepModalProps = {
   handleSetColorNFT: any;
 };
 
-const steps = ["取得する", "作成する", "取得する", "装着する"];
+const steps = ["受け取る（署名する）", "作成する（署名する）", "受け取る（署名する）", "収納する（署名する）"];
 
 const stepContent: Record<number, string> = {
-  0: "モデルを取得",
+  0: "モデルを受け取る",
   1: "モデルに紐づくTBAを作成",
-  2: "初期カラーの取得",
-  3: "初期カラーをTBAに装着",
+  2: "初期アセット（カラー）を受け取る",
+  3: "初期アセット（カラー）をTBAに収納",
   4: "初期設定がすべて完了しました",
 };
+
+const stepImage: any = {
+  0: "../assets/car-black.png",
+  1: "../assets/TBA-icon.png",
+  2: "../assets/colors.png",
+  3: "../assets/set-colors.png",
+  4: "../assets/success-icon.png",
+}
+
+const stepImageStyle: any = {
+  0: "80px",
+  1: "120px",
+  2: "85px",
+  3: "120px",
+  4: "70px",
+}
 
 export const StepModal: FC<StepModalProps> = ({
   isOpen,
@@ -63,13 +79,10 @@ export const StepModal: FC<StepModalProps> = ({
       } else if (activeStep === 3) {
         await handleSetColorNFT();
       }
-      // If the step function executes without throwing an error, proceed to the next step
       setActiveStep((prevActiveStep) => prevActiveStep + 1);
     } catch (error) {
-      // If an error is thrown, handle it here (e.g., by showing a toast notification)
-      // Error handling should also be performed within each step function
     }
-    setLoading(false); // Stop the spinner regardless of the outcome
+    setLoading(false); 
   }, [
     activeStep,
     handleMintMyCarNFT,
@@ -110,6 +123,14 @@ export const StepModal: FC<StepModalProps> = ({
         <Typography variant="body1" sx={{ my: 4, textAlign: "center" }}>
           {loading ? "処理中です.." : stepContent[activeStep]}
         </Typography>
+        <img
+          src={stepImage[activeStep]}
+          alt="Astar"
+          style={{
+            height: stepImageStyle[activeStep],
+            marginBottom: "30px"
+          }}
+        />
         <Button
           variant="contained"
           onClick={handleNext}

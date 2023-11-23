@@ -40,8 +40,8 @@ const menuItemArray: MenuContentType[] = [
     path: "/map",
   },
   {
-    label: "アクティビィティ",
-    icon: <IconWrapper src="../assets/activity-icon.png" alt="アクティビィティ" />,
+    label: "アクティビティ",
+    icon: <IconWrapper src="../assets/activity-icon.png" alt="ユーティリティ" />,
     path: "/activity",
   },
 ];

@@ -6,4 +6,5 @@ export const modalStyle = {
   borderRadius: "2px",
   boxShadow: 24,
   bgcolor: "white",
+  width: "350px"
 };

@@ -13,7 +13,6 @@ import { useUpdateState } from "../hooks/useUpdateGlobalState";
 import { config } from "../config/config";
 
 export const Auth: FC = () => {
-  const router = useNavigate();
   const { updateUserState } = useUpdateState();
   const navigate = useNavigate();
 
@@ -22,7 +21,7 @@ export const Auth: FC = () => {
       const web3auth = new Web3Auth({
         clientId:
           "BOAPXOm3gNW72Bn8ywnRYDVCX2_DKL_HvjgNCZyl7tzkYebcZ3YY0Jj0sWDQksXsSqwdhtrrIbNxPd-NPcR4ExQ", // get it from Web3Auth Dashboard
-        web3AuthNetwork: "sapphire_devnet",
+        web3AuthNetwork: "sapphire_mainnet",
         chainConfig: {
           chainNamespace: "eip155",
           chainId: "0x133e40",
@@ -54,7 +53,7 @@ export const Auth: FC = () => {
       const provider = new ethers.providers.Web3Provider(web3authProvider!);
       updateUserInfo(provider, web3auth);
       const user = await web3auth!.getUserInfo();
-      console.log(user);
+      // console.log(":", user);
 
       navigate("/");
       return;
@@ -70,6 +69,7 @@ export const Auth: FC = () => {
     const signer = await provider?.getSigner();
     const signerAddress = (await signer?.getAddress()) as string;
     const safe = await getSafeAddress(provider, signer);
+    console.log("Safe Address:", safe);
 
     updateUserState({
       web3auth: web3auth,
@@ -91,7 +91,7 @@ export const Auth: FC = () => {
 
     const safeAddress = await safeAccountAbstraction.getSafeAddress();
     const isDeployed = await safeAccountAbstraction.isSafeDeployed();
-    console.log(safeAddress, isDeployed);
+    // console.log(safeAddress, isDeployed);
 
     return safeAddress;
   };

@@ -19,7 +19,9 @@ export const mintColorNFT = async ({ userState, to, tokenId, amount }: any) => {
       userState.provider.getSigner()
     );
 
-    const { data: dataCounter } = await contract!.populateTransaction.mint(
+    // console.log(tokenId)
+    // console.log(amount)
+    const { data: dataCounter } = await contract!.populateTransaction.mintBatch(
       to,
       tokenId,
       amount

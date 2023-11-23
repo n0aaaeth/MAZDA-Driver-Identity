@@ -6,7 +6,14 @@ import { sessionKeyAbi } from "../abi/sessionAbi";
 import { BrowserProvider, Wallet } from "ethers6";
 import { CallWithERC2771Request, GelatoRelay } from "@gelatonetwork/relay-sdk";
 
-export const signLessTx = async ({ userState, targetContract, abi }: any) => {
+export const signLessTx = async ({
+  userState,
+  targetContract,
+  abi,
+  to,
+  tokenId,
+  amount,
+}: any) => {
   try {
     const relay = new GelatoRelay();
     const tmpTargetContract = new Contract(
@@ -21,8 +28,13 @@ export const signLessTx = async ({ userState, targetContract, abi }: any) => {
     );
 
     // トランザクションデータを取得
-    const { data: dataCounter } =
-      await tmpTargetContract.populateTransaction.mint();
+    // console.log(tokenId);
+    // console.log(amount);
+    const { data: dataCounter } = await tmpTargetContract!.populateTransaction.mintBatch(
+      to,
+      tokenId,
+      amount
+    );
 
     // セッションIDとキーをローカルストレージから取得
     const sessionId = localStorage.getItem(StorageKeys.SESSION_ID);
@@ -34,6 +46,7 @@ export const signLessTx = async ({ userState, targetContract, abi }: any) => {
     }
 
     const tempKey = new TempKey(sessionKey);
+    
 
     // トランザクション仕様を準備
     const txSpec = {
@@ -45,9 +58,10 @@ export const signLessTx = async ({ userState, targetContract, abi }: any) => {
 
     // 実行データを取得
     let { data: dataExecute } =
-      await tmpSessionKeyContract.populateTransaction.executeWithSessionKey(sessionId, [
-        txSpec,
-      ]);
+      await tmpSessionKeyContract.populateTransaction.executeWithSessionKey(
+        sessionId,
+        [txSpec]
+      );
 
     // ブラウザプロバイダーとウォレットの設定
     const localProvider = new BrowserProvider(window.ethereum);

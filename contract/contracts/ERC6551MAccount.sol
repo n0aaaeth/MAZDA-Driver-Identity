@@ -88,14 +88,28 @@ contract ERC6551Account is IERC165, IERC1271, IERC6551MAccount, ERC2771Context  
         return "";
     }
 
-    function setAsset(address collection, uint256 tokenId, bool state) external {
+     function setAsset(
+        address collection,
+        uint256[] memory tokenIds,
+        bool[] memory states
+    ) external {
         address msgSender = ERC2771Context._msgSender();
         require(msgSender == owner(),"Not Owner");
-        asset[collection][tokenId] = state;
+        require(tokenIds.length == states.length, "Mismatched array lengths");
+
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            asset[collection][tokenIds[i]] = states[i];
+        }
     }
 
-    function isAssetSet(address collection, uint256 tokenId) external view returns (bool) {
-        return asset[collection][tokenId];
+    function isAssetSet(address collection, uint256[] memory tokenIds) external view returns (bool[] memory) {
+        bool[] memory setStates = new bool[](tokenIds.length);
+
+        for (uint256 i = 0; i < tokenIds.length; i++) {
+            setStates[i] = asset[collection][tokenIds[i]];
+        }
+
+        return setStates;
     }
 
     function onERC721Received(

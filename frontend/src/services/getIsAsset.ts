@@ -14,6 +14,5 @@ export const isAssetSet = async ({
   );
 
   const status = await contract.isAssetSet(contractAddress, tokenId);
-  console.log(status);
   return status;
 };

@@ -2,11 +2,12 @@ import { FC } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Map } from "../pages/Map";
 import { Custom } from "../pages/Custom";
-import { Activity } from "../pages/Activity";
 import { Auth } from "../pages/Auth";
 import { StartSetup } from "../pages/StartSetup";
 import { CreateTBA } from "../pages/CreateTBA";
 import { GetColor } from "../pages/GetColor";
+import { Activity } from "../pages/Activity";
+import { Utility } from "../pages/Utility";
 
 const routs: {
   path: string;
@@ -39,6 +40,10 @@ const routs: {
   {
     path: "/activity",
     element: <Activity />,
+  },
+  {
+    path: "/utility",
+    element: <Utility />,
   },
 ];
 

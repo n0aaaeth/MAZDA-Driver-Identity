@@ -5,7 +5,6 @@ import {
   MetaTransactionOptions,
   OperationType,
 } from "@safe-global/safe-core-sdk-types";
-import { myCarAbi } from "../abi/myCarAbi";
 import { sessionKeyAbi } from "../abi/sessionAbi";
 import { Interface } from "ethers/lib/utils";
 import { TempKey } from "../session/TempKey";
@@ -15,6 +14,7 @@ import { GelatoRelayPack } from "zkatana-gelato-relay-kit";
 import AccountAbstraction, {
   AccountAbstractionConfig,
 } from "zkatana-gelato-account-abstraction-kit";
+import { colorAbi } from "../abi/colorAbi";
 
 export const createSessionKeys = async ({
   userState,
@@ -45,10 +45,10 @@ export const createSessionKeys = async ({
     isEnabled = false;
   }
 
-  console.log("Is module enabled: ", isEnabled);
+  // console.log("Is module enabled: ", isEnabled);
   let tmpMintMyCarNftContract = new Contract(
-    config.myCarAddress,
-    myCarAbi,
+    config.colorAddress,
+    colorAbi,
     userState.provider.getSigner()
   );
 
@@ -58,7 +58,8 @@ export const createSessionKeys = async ({
     userState.provider.getSigner()
   );
 
-  const funcSig = tmpMintMyCarNftContract.interface.getSighash("mint()");
+  // const funcSig = tmpMintMyCarNftContract.interface.getSighash("mint()");
+  const funcSig = tmpMintMyCarNftContract.interface.getSighash("mintBatch(address,uint256[],uint256[])");
 
   const txSpec = {
     to: contractAddress,
@@ -72,7 +73,7 @@ export const createSessionKeys = async ({
     [txSpec]
   );
 
-  console.log("is whitelisted: ", isWhitelisted);
+  // console.log("is whitelisted: ", isWhitelisted);
 
   if (isWhitelisted === false) {
     const safeTransactionDataWhitelist: MetaTransactionData = {
@@ -106,11 +107,13 @@ export const createSessionKeys = async ({
   }
 
   const tempKey = new TempKey();
-  console.log(tempKey.privateKey);
+  // console.log(tempKey.privateKey);
   const tempAddress = tempKey.address;
 
   const sessionId = uuidv4();
-  console.log(sessionId, tempAddress);
+  console.log("Session Id:", sessionId);
+  console.log("Temp Address:", tempAddress);
+  console.log("Start Session Key Creation");
   const safeTransactionDataCreation: MetaTransactionData = {
     to: config.sessionModuleContract,
     data: tmpSessionContract.interface.encodeFunctionData("createSessionKey", [
@@ -124,11 +127,11 @@ export const createSessionKeys = async ({
 
   transactionsArray.push(safeTransactionDataCreation);
 
-  console.log(transactionsArray);
+  // console.log(transactionsArray);
   localStorage.setItem(StorageKeys.SESSION_ID, sessionId);
   localStorage.setItem(StorageKeys.SESSION_KEY, tempKey.privateKey);
 
-  console.log(sessionId, tempAddress);
+  // console.log(sessionId, tempAddress);
 
   let web3AuthSigner = userState.signer;
   try {
@@ -146,12 +149,12 @@ export const createSessionKeys = async ({
       gasLimit: gasLimit,
       isSponsored: true,
     };
-    console.log(transactionsArray);
+    // console.log(transactionsArray);
     const response = await safeAccountAbstraction.relayTransaction(
       transactionsArray,
       options
     );
-    console.log(response);
+    // console.log(response);
     console.log(`https://relay.gelato.digital/tasks/status/${response}`);
     return response;
   } catch (error) {

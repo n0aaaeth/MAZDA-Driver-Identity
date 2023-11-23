@@ -9,20 +9,24 @@ export const Header: FC = () => {
       justifyContent="space-between"
       sx={{
         bgcolor: "primary.light",
-        p: 1,
+        pl: 2,
+        pr: 2,
+        pt: 1,
+        pb: 1,
         top: 0,
       }}
     >
       <Stack direction="row" alignItems="center" spacing={1} >
         <Typography
-          variant="h6"
+          variant="h1"
           sx={{
             color: "secondary.main",
             fontWeight: "bold",
             fontFamily: "Mazda Type Regular",
+            fontSize: "20px"
           }}
         >
-          MAZDA Driver Identify
+          MAZDA Driver Identity
         </Typography>
         <img
           src="../assets/astar-logo.png"

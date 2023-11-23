@@ -19,6 +19,8 @@ export const setAsset = async ({ userState, tba, tokenId, state }: any) => {
       userState.provider.getSigner()
     );
 
+    // console.log(tokenId);
+    // console.log(state);
     const { data: dataCounter } = await contract!.populateTransaction.setAsset(
       config.colorAddress,
       tokenId,
