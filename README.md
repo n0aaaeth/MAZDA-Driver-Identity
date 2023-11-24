@@ -35,3 +35,6 @@ ERC6551を活用したDynamic NFTの開発に最適化されたERC規格を独�
 - **ユーザー体験の簡素化**：　ユーザーは毎回のトランザクションごとに署名を行う必要がなくなり、ユーザーエクスペリエンスが簡素化される
 
 ![img1](https://raw.githubusercontent.com/n0aaaeth/MAZDA-Driver-Identity/main/images/img1.png)
+
+## デモ（プロダクト解説）
+https://youtu.be/vV0Q_-RLq3E?si=8G1V6A_2GwDo_Ur4
