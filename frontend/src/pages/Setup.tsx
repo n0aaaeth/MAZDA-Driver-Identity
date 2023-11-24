@@ -1,46 +1,48 @@
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { FC, useCallback, useState } from "react";
 import { StepModal } from "../component/modal/StepModal";
-import { fetchGelatoRelayStatus } from "../services/fetchGelatoRelayStatus";
-import { createContractInstance } from "../util/createContractInstance";
+import { getGelatoRelayStatus } from "../services/getGelatoRelayStatus";
 import { config } from "../config/config";
 import { myCarAbi } from "../abi/myCarAbi";
 import { useRecoilValue } from "recoil";
-import { userStateAtom } from "../store/useState";
 import { mintMyCarNFT } from "../services/mintMyCar";
 import { Notification } from "../component/notification/Notification";
 import { Contract, ethers } from "ethers";
-import { createTBA } from "../services/createTBA";
 import { getTBA } from "../services/getTBA";
 import { mintColorNFT } from "../services/mintColor";
 import { setAsset } from "../services/setAsset";
 import { isAssetSet } from "../services/getIsAsset";
-import { useUpdateState } from "../hooks/useUpdateGlobalState";
-import { useNavigate } from "react-router-dom";
+import { web3StateAtom } from "../store/web3State";
+import { useUpdateWeb3State } from "../hooks/useUpdateWeb3State";
+import { createTBA } from "../services/createTBA";
 
-export const StartSetup: FC = () => {
-  const userState = useRecoilValue(userStateAtom);
-  const { updateUserState } = useUpdateState();
+type SnackbarState = {
+  open: boolean;
+  message: string;
+  severity: 'info' | 'success' | 'error' | 'warning';
+};
+
+export const Setup: FC = () => {
+  const web3State = useRecoilValue(web3StateAtom);
+  const {updateWeb3State} = useUpdateWeb3State();
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const navigate =useNavigate();
-
-  const [tokenMintedId, setTokenMintedId] = useState(0);
+  const [tokenMintedId, setTokenMintedId] = useState<number | null>(null);
+  const [tba, setTba] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [tba, setTba] = useState("");
-
-  const [snackbar, setSnackbar] = useState({
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
     open: false,
     message: "",
     severity: "info",
   });
 
-  const openSnackbar = useCallback((message: string, severity: string) => {
+  const openSnackbar = useCallback((message: string, severity: SnackbarState['severity']) => {
     setSnackbar({ open: true, message, severity });
   }, []);
 
   const closeSnackbar = useCallback(() => {
-    setSnackbar({ ...snackbar, open: false });
-  }, [snackbar]);
+    setSnackbar(prev => ({ ...prev, open: false }));
+  }, []);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -55,9 +57,11 @@ export const StartSetup: FC = () => {
     console.log("Task start");
     try {
       const response = await mintMyCarNFT({
-        userState: userState,
+        provider: web3State.provider,
       });
-      const status = await fetchGelatoRelayStatus(response);
+      const status = await getGelatoRelayStatus({
+        taskIdToQuery: response
+      });
       console.log("Task succeeded:", status);
       const tokenId = await listenForTokenMinted();
       console.log(`Minted Token ID: ${tokenId}`);
@@ -74,93 +78,13 @@ export const StartSetup: FC = () => {
     }
   };
 
-  const handleCreateTBA = async () => {
-    setLoading(true);
-    console.log("Task start");
-    try {
-      const response = await createTBA({
-        userState: userState,
-        userHoldTokenId: Number(tokenMintedId),
-      });
-      const status = await fetchGelatoRelayStatus(response);
-      const tba = await getTBA({
-        userState: userState,
-        userHoldTokenId: Number(tokenMintedId),
-      });
-      setTba(tba);
-      updateUserState({
-        tba: tba
-      })
-      console.log("Task succeeded:", status);
-      console.log(`Token Bound Accounts: ${tba}`);
-      openSnackbar(`TBAの作成に成功しました: ${tba}`, "success");
-    } catch (error) {
-      console.error("An error occurred:", error);
-      openSnackbar("TBAの作成に失敗しました", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleMintColorNFT = async () => {
-    setLoading(true);
-    // console.log(tba)
-    console.log("Task start");
-    try {
-      const response = await mintColorNFT({
-        userState: userState,
-        to: tba,
-        tokenId: [1,2,3],
-        amount: [1,1,1],
-      });
-      const status = await fetchGelatoRelayStatus(response);
-      console.log("Task succeeded:", status);
-      openSnackbar(`車体のボディーカラーNFTの取得に成功しました`, "success");
-    } catch (error) {
-      console.error("An error occurred:", error);
-      openSnackbar("車体のカラーNFTの取得が失敗しました", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSetColorNFT = async () => {
-    setLoading(true);
-    console.log("Task start");
-    try {
-      const response = await setAsset({
-        userState: userState,
-        tba: tba,
-        tokenId: [1,2,3],
-        state: [true,false,false],
-      });
-      const status = await fetchGelatoRelayStatus(response);
-      console.log("Task succeeded:", status);
-      const isSet = await isAssetSet({
-        userState: userState,
-        tba: tba,
-        contractAddress: config.colorAddress,
-        tokenId: [1, 2, 3],
-      });
-      // console.log(isSet)
-      if (isSet) {
-        openSnackbar(`車体のボディーカラーNFTの装着に成功しました`, "success");
-      }
-    } catch (error) {
-      console.error("An error occurred:", error);
-      openSnackbar("車体のボディーカラーNFTの装着が失敗しました", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const listenForTokenMinted = async (): Promise<string> => {
+  const listenForTokenMinted = async () => {
     return new Promise<string>(async (resolve, reject) => {
       try {
-        const myCarContract: Contract = await createContractInstance(
+        const myCarContract = new Contract(
           config.myCarAddress,
           myCarAbi,
-          userState.provider!
+          web3State.provider!.getSigner()
         );
 
         const eventFilter = myCarContract.filters.TokenMinted();
@@ -183,20 +107,95 @@ export const StartSetup: FC = () => {
     });
   };
 
-  // const handleIsAsset = async () => {
-  //   const status = await isAssetSet({
-  //     userState: userState,
-  //     tba: tba,
-  //     contractAddress: config.colorAddress,
-  //     tokenId: 1,
-  //   });
-  //   console.log(status)
-  // };
-
-  const handleLogout = async () => {
-    await userState.web3auth?.logout();
-    navigate("/auth");
+  const handleCreateTBA = async () => {
+    setLoading(true);
+    console.log("Task start");
+    try {
+      const response = await createTBA({
+        provider: web3State.provider,
+        userHoldTokenId: Number(tokenMintedId),
+      });
+      const status = await getGelatoRelayStatus({
+        taskIdToQuery: response
+      });
+      const tba = await getTBA({
+        provider: web3State.provider,
+        userHoldTokenId: Number(tokenMintedId),
+      });
+      setTba(tba);
+      updateWeb3State({
+        tba: tba
+      })
+      console.log("Task succeeded:", status);
+      console.log(`Token Bound Accounts: ${tba}`);
+      openSnackbar(`TBAの作成に成功しました: ${tba}`, "success");
+    } catch (error) {
+      console.error("An error occurred:", error);
+      openSnackbar("TBAの作成に失敗しました", "error");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  const handleMintColorNFT = async () => {
+    setLoading(true);
+    console.log("Task start");
+    try {
+      const response = await mintColorNFT({
+        provider: web3State.provider,
+        to: tba,
+        tokenId: [1,2,3],
+        amount: [1,1,1],
+      });
+      const status = await getGelatoRelayStatus({
+        taskIdToQuery: response
+      });
+      console.log("Task succeeded:", status);
+      openSnackbar(`車体のボディーカラーNFTの取得に成功しました`, "success");
+    } catch (error) {
+      console.error("An error occurred:", error);
+      openSnackbar("車体のカラーNFTの取得が失敗しました", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSetColorNFT = async () => {
+    setLoading(true);
+    console.log("Task start");
+    try {
+      const response = await setAsset({
+        provider: web3State.provider,
+        tba: tba,
+        tokenId: [1,2,3],
+        states: [true,false,false],
+      });
+      const status = await getGelatoRelayStatus({
+        taskIdToQuery: response
+      });
+      console.log("Task succeeded:", status);
+      const isSet = await isAssetSet({
+        provider: web3State.provider,
+        tba: tba,
+        contractAddress: config.colorAddress,
+        tokenId: [1, 2, 3],
+      });
+      // console.log(isSet)
+      if (isSet) {
+        openSnackbar(`車体のボディーカラーNFTの装着に成功しました`, "success");
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
+      openSnackbar("車体のボディーカラーNFTの装着が失敗しました", "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // const handleLogout = async () => {
+  //   await web3State.web3auth?.logout();
+  //   navigate("/auth");
+  // };
 
   return (
     <Container

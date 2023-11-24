@@ -1,22 +1,36 @@
-import { Contract, utils } from "ethers";
+import { Contract, providers, utils } from "ethers";
 import { config } from "../config/config";
 import { sessionKeyAbi } from "../abi/sessionAbi";
 import { StorageKeys } from "../session/storage/storage-keys";
 
-export const getSessionKey = async ({userState}: any) => {
-    const contract = new Contract(
-        config.sessionModuleContract,
-        sessionKeyAbi,
-        userState.provider!.getSigner()
-      );
+type GetSessionKeyParams =  {
+  provider: providers.Web3Provider | null;
+}
 
-    const sessionId = localStorage.getItem(StorageKeys.SESSION_ID);
+export const getSessionKey = async ({ provider }: GetSessionKeyParams) => {
+  if (!provider) {
+    throw new Error("Provider is null or undefined.");
+  }
 
-    const packed = utils.solidityPack(["string"], [sessionId]);
-    const hash = utils.keccak256(packed);
+  const contract = new Contract(
+    config.sessionModuleContract,
+    sessionKeyAbi,
+    provider.getSigner()
+  );
 
+  const sessionId = localStorage.getItem(StorageKeys.SESSION_ID);
+  if (!sessionId) {
+    throw new Error("Session ID not found in localStorage.");
+  }
+
+  const packed = utils.solidityPack(["string"], [sessionId]);
+  const hash = utils.keccak256(packed);
+
+  try {
     const session = await contract.sessionKeys(hash);
-    // console.log("Session Key:", session);
-
     return session;
-  };
+  } catch (error) {
+    console.error("Failed to retrieve session key:", error);
+    throw error;
+  }
+};

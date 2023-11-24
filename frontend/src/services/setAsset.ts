@@ -1,76 +1,68 @@
-import { Contract, ethers } from "ethers";
+import { Contract, providers } from "ethers";
 import { config } from "../config/config";
+import { erc6551AccountAbi } from "../abi/erc6551AccountAbi";
 import {
   MetaTransactionData,
   MetaTransactionOptions,
   OperationType,
 } from "@safe-global/safe-core-sdk-types";
 import { GelatoRelayPack } from "zkatana-gelato-relay-kit";
-import AccountAbstraction, {
-  AccountAbstractionConfig,
-} from "zkatana-gelato-account-abstraction-kit";
-import { erc6551AccountAbi } from "../abi/erc6551AccountAbi";
+import AccountAbstraction from "zkatana-gelato-account-abstraction-kit";
 
-export const setAsset = async ({ userState, tba, tokenId, state }: any) => {
+type SetAssetParams =  {
+  provider: providers.Web3Provider | null;
+  tba: string | null;
+  tokenId: number[];
+  states: boolean[];
+}
+
+export const setAsset = async ({
+  provider,
+  tba,
+  tokenId,
+  states,
+}: SetAssetParams) => {
+  if (!provider) {
+    throw new Error("Provider is null or undefined.");
+  }
+
   try {
-    const contract = new Contract(
-      tba,
-      erc6551AccountAbi,
-      userState.provider.getSigner()
-    );
+    const signer = provider.getSigner();
+    const contract = new Contract(tba!, erc6551AccountAbi, signer);
 
-    // console.log(tokenId);
-    // console.log(state);
-    const { data: dataCounter } = await contract!.populateTransaction.setAsset(
+    const { data: dataCounter } = await contract.populateTransaction.setAsset(
       config.colorAddress,
       tokenId,
-      state
+      states
     );
-    const gasLimit = "10000000";
-    const txConfig = {
-      to: tba,
-      data: dataCounter!,
-      value: "0",
-      operation: 0,
-      gasLimit,
-    };
+    if (!dataCounter) {
+      throw new Error('Failed to get transaction data.');
+    }
 
-    const safeTransactions: MetaTransactionData[] = [
-      {
-        to: txConfig.to,
-        data: txConfig.data,
-        value: txConfig.value,
-        operation: OperationType.Call,
-      },
-    ];
+    const safeTransactions: MetaTransactionData[] = [{
+      to: tba!,
+      data: dataCounter,
+      value: "0",
+      operation: OperationType.Call,
+    }];
+
     const options: MetaTransactionOptions = {
-      gasLimit: txConfig.gasLimit,
+      gasLimit: "10000000",
       isSponsored: true,
     };
-    let web3AuthSigner = userState.signer;
-    try {
-      const privateKey = ("0x" +
-        (await userState.web3auth!.provider!.request({
-          method: "eth_private_key",
-        }))) as string;
-      web3AuthSigner = new ethers.Wallet(privateKey!, userState.provider!);
-    } catch (error) {}
-    const relayPack = new GelatoRelayPack(config.gelatoRelayApiKey);
 
-    const safeAccountAbstraction = new AccountAbstraction(web3AuthSigner!);
-    const sdkConfig: AccountAbstractionConfig = {
-      relayPack,
-    };
-    await safeAccountAbstraction.init(sdkConfig);
+    const relayPack = new GelatoRelayPack(config.gelatoRelayApiKey);
+    const safeAccountAbstraction = new AccountAbstraction(signer);
+    await safeAccountAbstraction.init({ relayPack });
 
     const response = await safeAccountAbstraction.relayTransaction(
       safeTransactions,
       options
     );
-
     console.log(`https://relay.gelato.digital/tasks/status/${response}`);
     return response;
   } catch (error) {
-    console.log(error);
+    console.error("Error in setAsset function:", error);
+    throw error; 
   }
 };

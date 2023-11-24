@@ -1,81 +1,85 @@
 import { Box, Typography } from "@mui/material";
 import { PrimaryLayout } from "../component/layout/PrimaryLayout";
-import { FC, useCallback, useState } from "react";
+import { FC, useState } from "react";
 import { useDiscloser } from "../hooks/useDiscloser";
 import { PrimaryModal } from "../component/modal/PrimaryModal";
 import LockIcon from "@mui/icons-material/Lock";
-import { userStateAtom } from "../store/useState";
 import { useRecoilValue } from "recoil";
 import { setAsset } from "../services/setAsset";
-import { fetchGelatoRelayStatus } from "../services/fetchGelatoRelayStatus";
+import { getGelatoRelayStatus } from "../services/getGelatoRelayStatus";
 import { isAssetSet } from "../services/getIsAsset";
 import { config } from "../config/config";
 import { Notification } from "../component/notification/Notification";
+import { web3StateAtom } from "../store/web3State";
+
+const tokenToImageMap: Record<number, string> = {
+  1: "../assets/car-light-black.png",
+  2: "../assets/car-light-navy.png",
+  3: "../assets/car-light-red.png",
+};
+
+const colorToTokenIdMap: Record<string, number> = {
+  Black: 1,
+  Navy: 2,
+  Red: 3,
+};
+
+type Color = string;
+type ImageSrc = string;
+
+type ColorSelection = {
+  color: Color;
+  image: ImageSrc;
+};
+
+type SnackbarState = {
+  open: boolean;
+  message: string;
+  severity: "info" | "success" | "error" | "warning";
+};
 
 export const Custom: FC = () => {
-  const userState = useRecoilValue(userStateAtom);
+  const web3State = useRecoilValue(web3StateAtom);
   const [isOpen, onClose, onOpen] = useDiscloser(false);
-  const [selectedColor, setSelectedColor] = useState({
+  const [selectedColor, setSelectedColor] = useState<ColorSelection>({
     color: "Black",
     image: "../assets/color-black.png",
   });
-  const [newColor, setNewColor] = useState({
-    color: selectedColor.color,
-    image: selectedColor.image,
-  });
-
+  const [newColor, setNewColor] = useState<ColorSelection>(selectedColor);
   const [loading, setLoading] = useState(false);
-
-  const [snackbar, setSnackbar] = useState({
+  const [snackbar, setSnackbar] = useState<SnackbarState>({
     open: false,
     message: "",
     severity: "info",
   });
 
-  const openSnackbar = useCallback((message: string, severity: string) => {
+  const openSnackbar = (
+    message: string,
+    severity: SnackbarState["severity"]
+  ) => {
     setSnackbar({ open: true, message, severity });
-  }, []);
+  };
 
-  const closeSnackbar = useCallback(() => {
-    setSnackbar({ ...snackbar, open: false });
-  }, [snackbar]);
+  const closeSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
-  const handleImageClick = (color: string, image: string) => {
-    setNewColor({
-      color: color,
-      image: image,
-    });
+  const handleImageClick = (color: Color, image: ImageSrc) => {
+    setNewColor({ color, image });
     onOpen();
   };
 
-  const tokenToImageMap = {
-    1: "../assets/car-light-black.png",
-    2: "../assets/car-light-navy.png",
-    3: "../assets/car-light-red.png",
-  };
-
-  const getImageSrc = () => {
-    if (selectedColor.color === "Black") {
-      return tokenToImageMap[1];
-    } else if (selectedColor.color === "Navy") {
-      return tokenToImageMap[2];
-    } else if (selectedColor.color === "Red") {
-      return tokenToImageMap[3];
-    } else {
-      return "../assets/car-light-black.png"; 
-    }
-  };
-
-  const colorToTokenIdMap: any = {
-    Black: 1,
-    Navy: 2,
-    Red: 3,
+  const getImageSrc = (): ImageSrc => {
+    return (
+      tokenToImageMap[colorToTokenIdMap[selectedColor.color]] ||
+      tokenToImageMap[1]
+    );
   };
 
   const handleSetAsset = async (
-    newColorName: string,
-    newColorImage: string
-) => {
+    newColorName: Color,
+    newColorImage: ImageSrc
+  ) => {
     console.log("Task start");
     setLoading(true);
 
@@ -86,53 +90,54 @@ export const Custom: FC = () => {
     let states = [false, true];
 
     try {
-        const response = await setAsset({
-            userState: userState,
-            tba: userState.tba,
-            tokenId: tokenIds,
-            state: states,
+      const response = await setAsset({
+        provider: web3State.provider,
+        tba: web3State.tba,
+        tokenId: tokenIds,
+        states: states,
+      });
+
+      const status = await getGelatoRelayStatus({
+        taskIdToQuery: response
+      });
+      console.log("Task succeeded:", status);
+
+      const isSet = await isAssetSet({
+        provider: web3State.provider,
+        tba: web3State.tba,
+        contractAddress: config.colorAddress,
+        tokenId: tokenIds,
+      });
+
+      const tokenToColorMap: { [key: number]: string } = {
+        1: "Black",
+        2: "Navy",
+        3: "Red",
+      };
+
+      console.log("ERC6551M SetAsset Processing:");
+      for (let i = 0; i < tokenIds.length; i++) {
+        const color = tokenToColorMap[tokenIds[i]];
+        console.log(
+          `Token ID ${tokenIds[i]} (Color: ${color}) Attachment Status: ${isSet[i]}`
+        );
+      }
+
+      if (isSet.every((value: any, index: any) => value === states[index])) {
+        openSnackbar(`カラーNFTの装着に成功しました`, "success");
+        setSelectedColor({
+          color: newColorName,
+          image: newColorImage,
         });
-
-        const status = await fetchGelatoRelayStatus(response);
-        console.log("Task succeeded:", status);
-
-        // Check if asset is set correctly
-        const isSet = await isAssetSet({
-            userState: userState,
-            tba: userState.tba,
-            contractAddress: config.colorAddress,
-            tokenId: tokenIds,
-        });
-
-        const tokenToColorMap: { [key: number]: string } = {
-          1: "Black",
-          2: "Navy",
-          3: "Red",
-        };        
-
-        console.log("ERC6551M SetAsset Processing:");
-        for (let i = 0; i < tokenIds.length; i++) {
-            const color = tokenToColorMap[tokenIds[i]];
-            console.log(`Token ID ${tokenIds[i]} (Color: ${color}) Attachment Status: ${isSet[i]}`);
-        }
-
-        // Check if both the current color is unset and the new color is set
-        if (isSet.every((value: any, index: any) => value === states[index])) {
-            openSnackbar(`カラーNFTの装着に成功しました`, "success");
-            setSelectedColor({
-                color: newColorName,
-                image: newColorImage,
-            });
-        }
+      }
     } catch (error) {
-        console.error("An error occurred:", error);
-        openSnackbar("カラーNFTの装着が失敗しました", "error");
+      console.error("An error occurred:", error);
+      openSnackbar("カラーNFTの装着が失敗しました", "error");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-
     onClose();
-};
+  };
 
   return (
     <PrimaryLayout>

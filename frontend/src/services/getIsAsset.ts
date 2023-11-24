@@ -1,18 +1,29 @@
-import { Contract } from "ethers";
+import { Contract, providers } from "ethers";
 import { erc6551AccountAbi } from "../abi/erc6551AccountAbi";
 
+type IsAssetSetParams =  {
+  provider: providers.Web3Provider | null;
+  tba: string | null;
+  contractAddress: string;
+  tokenId: number[];
+}
+
 export const isAssetSet = async ({
-  userState,
+  provider,
   tba,
   contractAddress,
   tokenId,
-}: any) => {
-  const contract = new Contract(
-    tba,
-    erc6551AccountAbi,
-    userState.provider!.getSigner()
-  );
+}: IsAssetSetParams) => {
+  if (!provider) {
+    throw new Error("Provider is null or undefined.");
+  }
+  const signer = provider.getSigner();
+  const contract = new Contract(tba!, erc6551AccountAbi, signer);
 
-  const status = await contract.isAssetSet(contractAddress, tokenId);
-  return status;
+  try {
+    const status = await contract.isAssetSet(contractAddress, tokenId);
+    return status;
+  } catch (error) {
+    throw error;
+  }
 };

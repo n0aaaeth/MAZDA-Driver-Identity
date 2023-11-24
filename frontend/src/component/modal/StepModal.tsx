@@ -11,15 +11,6 @@ import {
 import { CommonModal } from "./CommonModal";
 import { useNavigate } from "react-router-dom";
 
-// type StepModalProps = {
-//   isOpen: boolean;
-//   onClose: () => void;
-//   handleMintMyCarNFT: () => Promise<void> ;
-//   handleCreateTBA: () => Promise<void> ;
-//   handleMintColorNFT: () => Promise<void> ;
-//   handleSetColorNFT: () =>Promise<void> ;
-// };
-
 type StepModalProps = {
   isOpen: boolean;
   onClose: () => void;

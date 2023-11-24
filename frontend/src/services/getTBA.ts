@@ -1,17 +1,27 @@
-import { Contract } from "ethers";
+import { Contract, providers } from "ethers";
 import { config } from "../config/config";
 import { erc6551RegistryAbi } from "../abi/erc6551RegistryAbi";
 
+type GetTBAParams =  {
+  provider: providers.Web3Provider | null;
+  userHoldTokenId: number;
+}
+
 export const getTBA = async ({
-  userState,
+  provider,
   userHoldTokenId,
-}: any) => {
+}: GetTBAParams) => {
+  if (!provider) {
+    throw new Error("Provider is null or undefined.");
+  }
+
   try {
     const contract = new Contract(
       config.erc6551RegistryAddress,
       erc6551RegistryAbi,
-      userState.provider.getSigner()
+      provider.getSigner()
     );
+
     const accountAddress = await contract.account(
       config.erc6551AccountAddress,
       config.chainId,
@@ -20,9 +30,9 @@ export const getTBA = async ({
       1
     );
 
-    // console.log("Account Address:", accountAddress);
     return accountAddress;
   } catch (error) {
     console.error("Error calling the account function:", error);
+    throw error; 
   }
 };

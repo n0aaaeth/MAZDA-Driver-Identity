@@ -1,4 +1,4 @@
-import { Contract, ethers } from "ethers";
+import { Contract, providers } from "ethers";
 import { config } from "../config/config";
 import { colorAbi } from "../abi/colorAbi";
 import {
@@ -11,66 +11,55 @@ import AccountAbstraction, {
   AccountAbstractionConfig,
 } from "zkatana-gelato-account-abstraction-kit";
 
-export const mintColorNFT = async ({ userState, to, tokenId, amount }: any) => {
+type MintMyColorParams =  {
+  provider: providers.Web3Provider | null;
+  to: string | null;
+  tokenId: number[];
+  amount: number[];
+}
+
+export const mintColorNFT = async ({
+  provider,
+  to,
+  tokenId,
+  amount,
+}: MintMyColorParams) => {
+  if (!provider) {
+    throw new Error("Provider is null or undefined.");
+  }
+
   try {
-    const contract = new Contract(
-      config.colorAddress,
-      colorAbi,
-      userState.provider.getSigner()
-    );
+    const signer = provider.getSigner();
+    const contract = new Contract(config.colorAddress, colorAbi, signer);
 
-    // console.log(tokenId)
-    // console.log(amount)
-    const { data: dataCounter } = await contract!.populateTransaction.mintBatch(
-      to,
-      tokenId,
-      amount
-    );
+    const { data: dataCounter } = await contract.populateTransaction.mintBatch(to, tokenId, amount);
+    if (!dataCounter) {
+      throw new Error('Failed to get populated transaction data.');
+    }
+
     const gasLimit = "10000000";
-    const txConfig = {
+    const safeTransactions: MetaTransactionData[] = [{
       to: config.colorAddress,
-      data: dataCounter!,
+      data: dataCounter,
       value: "0",
-      operation: 0,
-      gasLimit,
-    };
+      operation: OperationType.Call,
+    }];
 
-    const safeTransactions: MetaTransactionData[] = [
-      {
-        to: txConfig.to,
-        data: txConfig.data,
-        value: txConfig.value,
-        operation: OperationType.Call,
-      },
-    ];
     const options: MetaTransactionOptions = {
-      gasLimit: txConfig.gasLimit,
+      gasLimit: gasLimit,
       isSponsored: true,
     };
-    let web3AuthSigner = userState.signer;
-    try {
-      const privateKey = ("0x" +
-        (await userState.web3auth!.provider!.request({
-          method: "eth_private_key",
-        }))) as string;
-      web3AuthSigner = new ethers.Wallet(privateKey!, userState.provider!);
-    } catch (error) {}
-    const relayPack = new GelatoRelayPack(config.gelatoRelayApiKey);
 
-    const safeAccountAbstraction = new AccountAbstraction(web3AuthSigner!);
-    const sdkConfig: AccountAbstractionConfig = {
-      relayPack,
-    };
+    const relayPack = new GelatoRelayPack(config.gelatoRelayApiKey);
+    const safeAccountAbstraction = new AccountAbstraction(signer);
+    const sdkConfig: AccountAbstractionConfig = { relayPack };
     await safeAccountAbstraction.init(sdkConfig);
 
-    const response = await safeAccountAbstraction.relayTransaction(
-      safeTransactions,
-      options
-    );
-
+    const response = await safeAccountAbstraction.relayTransaction(safeTransactions, options);
     console.log(`https://relay.gelato.digital/tasks/status/${response}`);
     return response;
   } catch (error) {
-    console.log(error);
+    console.error("Error in mintColorNFT:", error);
+    throw error; 
   }
 };

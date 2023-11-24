@@ -1,1 +1,1 @@
-# MAZDA Driver Identity App# mazda-hackathon-ui-kit
+# MAZDA Driver Identity App

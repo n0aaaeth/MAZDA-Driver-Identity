@@ -1,6 +1,13 @@
-import { Snackbar, Alert } from "@mui/material";
+import { Snackbar, Alert, AlertColor } from "@mui/material";
 
-export const Notification = ({ open, message, severity, onClose }: any) => {
+type NotificationProps = {
+  open: boolean;
+  message: string;
+  severity: AlertColor;
+  onClose: () => void; 
+}
+
+export const Notification = ({ open, message, severity, onClose }: NotificationProps) => {
   return (
     <Snackbar
       open={open}

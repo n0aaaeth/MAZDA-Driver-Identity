@@ -1,9 +1,8 @@
 import { Box, Typography } from "@mui/material";
 import { PrimaryLayout } from "../component/layout/PrimaryLayout";
-import { FC, SetStateAction, useState } from "react";
+import { FC, useState } from "react";
 import { useDiscloser } from "../hooks/useDiscloser";
 import { PrimaryModal } from "../component/modal/PrimaryModal";
-import LockIcon from "@mui/icons-material/Lock";
 
 export const Utility: FC = () => {
   const [isOpen, onClose, onOpen] = useDiscloser(false);

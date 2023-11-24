@@ -1,26 +1,21 @@
 import { Box, Button, Container, Stack, Typography } from "@mui/material";
 import { Web3Auth } from "@web3auth/modal";
 import { WALLET_ADAPTERS } from "@web3auth/base";
-import { ethers, providers } from "ethers";
+import { ethers } from "ethers";
 import { FC } from "react";
-
 import { useNavigate } from "react-router-dom";
-import AccountAbstraction, {
-  AccountAbstractionConfig,
-} from "zkatana-gelato-account-abstraction-kit";
-import { GelatoRelayPack } from "zkatana-gelato-relay-kit";
-import { useUpdateState } from "../hooks/useUpdateGlobalState";
 import { config } from "../config/config";
+import { useUpdateWeb3State } from "../hooks/useUpdateWeb3State";
+import { getSafeAddress } from "../services/getSafeAddress";
 
 export const Auth: FC = () => {
-  const { updateUserState } = useUpdateState();
+  const { updateWeb3State } = useUpdateWeb3State();
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
       const web3auth = new Web3Auth({
-        clientId:
-          "BOAPXOm3gNW72Bn8ywnRYDVCX2_DKL_HvjgNCZyl7tzkYebcZ3YY0Jj0sWDQksXsSqwdhtrrIbNxPd-NPcR4ExQ", // get it from Web3Auth Dashboard
+        clientId: config.web3AuthClientId,
         web3AuthNetwork: "sapphire_mainnet",
         chainConfig: {
           chainNamespace: "eip155",
@@ -52,48 +47,35 @@ export const Auth: FC = () => {
       const web3authProvider = await web3auth!.connect();
       const provider = new ethers.providers.Web3Provider(web3authProvider!);
       updateUserInfo(provider, web3auth);
-      const user = await web3auth!.getUserInfo();
+      // const user = await web3auth!.getUserInfo();
       // console.log(":", user);
 
-      navigate("/");
+      navigate("/setup");
       return;
     } catch (error) {
-      console.error(error);
+      console.error("Login failed:", error);
     }
   };
 
   const updateUserInfo = async (
-    provider: providers.Web3Provider,
+    provider: ethers.providers.Web3Provider,
     web3auth: Web3Auth
   ) => {
-    const signer = await provider?.getSigner();
-    const signerAddress = (await signer?.getAddress()) as string;
-    const safe = await getSafeAddress(provider, signer);
-    console.log("Safe Address:", safe);
+    try {
+      const signer = provider.getSigner();
+      const signerAddress = await signer.getAddress();
+      const safe = await getSafeAddress({ provider: provider });
+      console.log("Safe Address:", safe);
 
-    updateUserState({
-      web3auth: web3auth,
-      provider: provider,
-      signerAddress: signerAddress,
-      signer: signer,
-      safe: safe,
-    });
-    // await getCounter(provider, safeAddress);
-  };
-
-  const getSafeAddress = async (provider: any, signer?: any) => {
-    const relayPack = new GelatoRelayPack(config.gelatoRelayApiKey);
-    const safeAccountAbstraction = new AccountAbstraction(signer!);
-    const sdkConfig: AccountAbstractionConfig = {
-      relayPack,
-    };
-    await safeAccountAbstraction.init(sdkConfig);
-
-    const safeAddress = await safeAccountAbstraction.getSafeAddress();
-    const isDeployed = await safeAccountAbstraction.isSafeDeployed();
-    // console.log(safeAddress, isDeployed);
-
-    return safeAddress;
+      updateWeb3State({
+        web3auth,
+        provider,
+        signerAddress,
+        safe,
+      });
+    } catch (error) {
+      console.error("Failed to update user info:", error);
+    }
   };
 
   return (

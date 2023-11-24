@@ -1,45 +1,150 @@
-import { Box } from "@mui/material";
+import { AlertColor, Box } from "@mui/material";
 import { PrimaryLayout } from "../component/layout/PrimaryLayout";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { useDiscloser } from "../hooks/useDiscloser";
 import { PrimaryModal } from "../component/modal/PrimaryModal";
 import { Notification } from "../component/notification/Notification";
-import { signLessTx } from "../services/signLessTx";
 import { config } from "../config/config";
-import { fetchGelatoRelayStatus } from "../services/fetchGelatoRelayStatus";
-import { userStateAtom } from "../store/useState";
+import { getGelatoRelayStatus } from "../services/getGelatoRelayStatus";
 import { useRecoilValue } from "recoil";
-import { colorAbi } from "../abi/colorAbi";
 import { createSessionKeys } from "../services/createSessionKeys";
 import { TempKey } from "../session/TempKey";
 import { getSessionKey } from "../services/getSessionKey";
 import { StorageKeys } from "../session/storage/storage-keys";
 import { LocalStorage } from "../session/storage/local-storage";
+import { web3StateAtom } from "../store/web3State";
+import { mintColorWithSessionKey } from "../services/mintColorWithSessionKey";
 
 export const Map: FC = () => {
-  const userState = useRecoilValue(userStateAtom);
+  const web3State = useRecoilValue(web3StateAtom);
   const [isOpen, onClose] = useDiscloser(true);
   const [carPosition, setCarPosition] = useState<any>({});
-  const [isSignLess, setIsSignLess] = useState(false);
   const [pointerPosition] = useState({ x: 37, y: 35 });
-  const markerRef = useRef<HTMLImageElement>(null);
   const [showArrivalModal, setShowArrivalModal] = useState(false);
+  const [isSignLess, setIsSignLess] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const [snackbar, setSnackbar] = useState({
     open: false,
     message: "",
-    severity: "info",
+    severity: "info" as AlertColor,
   });
+  const markerRef = useRef<HTMLImageElement>(null);
 
-  const openSnackbar = useCallback((message: string, severity: string) => {
+  const openSnackbar = (
+    message: string,
+    severity: AlertColor
+  ) => {
     setSnackbar({ open: true, message, severity });
-  }, []);
+  };
 
-  const closeSnackbar = useCallback(() => {
-    setSnackbar({ ...snackbar, open: false });
-  }, [snackbar]);
+  const closeSnackbar = () => {
+    setSnackbar((prev) => ({ ...prev, open: false }));
+  };
 
+  const handlePointerClick = () => {
+    setCarPosition({ x: 57, y: 85 });
+  };
+
+  const handleMintItemSignLess = async () => {
+    setLoading(true);
+
+    try {
+      const response = await mintColorWithSessionKey({
+        provider: web3State.provider,
+        to: web3State.tba,
+        tokenId: [4],
+        amount: [1],
+      });
+      const status = await getGelatoRelayStatus({
+        taskIdToQuery: response
+      });
+      console.log("Task succeeded:", status);
+      openSnackbar(`カラーNFTの取得に成功しました`, "success");
+      openSnackbar(
+        `アクティビティタスクの「アスターカラーNFTの入手」を達成しました! 🎉`,
+        "success"
+      );
+      setShowArrivalModal(false);
+    } catch (error) {
+      console.error("An error occurred:", error);
+      openSnackbar("カラーNFTの取得が失敗しました", "error");
+      setShowArrivalModal(false);
+    } finally {
+      setLoading(false);
+      onClose();
+    }
+  };
+
+  const handleStartSignLess = async () => {
+    const localStorage = new LocalStorage();
+    const _sessionId = localStorage.get(StorageKeys.SESSION_ID);
+    const _sessionKey = localStorage.get(StorageKeys.SESSION_KEY);
+
+    if (!_sessionId || !_sessionKey) {
+      console.log("Task start");
+      try {
+        setLoading(true);
+        const response = await createSessionKeys({
+          provider: web3State.provider,
+          safe: web3State.safe,
+          contractAddress: config.colorAddress,
+        });
+        const status = await getGelatoRelayStatus({
+          taskIdToQuery: response
+        });
+        console.log("Task succeeded:", status);
+        openSnackbar(`セッションキーの作成に成功しました`, "success");
+      } catch (error) {
+        console.error("Error creating or fetching session keys:", error);
+        openSnackbar(`セッションキーの作成または取得に失敗しました`, "error");
+      } finally {
+        setLoading(false);
+        setIsSignLess(true);
+        onClose();
+      }
+      return;
+    }
+
+    try {
+      const session = await getSessionKey({ provider: web3State.provider });
+      console.log("Session Key:", session);
+      const tempKey = new TempKey(_sessionKey);
+      const timestamp = Math.floor(Date.now() / 1000);
+
+      if (
+        tempKey.address !== session.tempPublicKey ||
+        timestamp > +session.end.toString() ||
+        web3State.safe !== session.user
+      ) {
+        openSnackbar(
+          `セッションキーが無効です。新しいキーを作成します。`,
+          "info"
+        );
+        setTimeout(async () => {
+          try {
+            await createSessionKeys({
+              provider: web3State.provider,
+              safe: web3State.safe,
+              contractAddress: config.colorAddress,
+            });
+          } catch (error) {
+            console.error("Error re-creating session keys:", error);
+            openSnackbar(`セッションキーの再作成に失敗しました`, "error");
+          }
+        }, 1000);
+      } else {
+        openSnackbar(`既存のセッションキーが有効です。`, "info");
+      }
+    } catch (error) {
+      console.error("Error validating or updating session:", error);
+      openSnackbar(`セッションキーの検証または更新に失敗しました`, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // useEffect for car movement - demo-specific logic
+  // This effect moves the car towards the pointer position in a demo simulation.
   useEffect(() => {
     const interval = setInterval(() => {
       const dx = pointerPosition.x - carPosition.x;
@@ -71,145 +176,36 @@ export const Map: FC = () => {
     };
   }, [carPosition.x, carPosition.y]);
 
+  // useEffect for showing arrival modal - demo-specific logic
+  // This effect checks if the car has reached a specific point and triggers a modal.
   useEffect(() => {
     if (carPosition.x === 37 && carPosition.y === 35 && !showArrivalModal) {
-      setShowArrivalModal(true); // Open the second modal when the car arrives at x: 37, y: 35
+      setShowArrivalModal(true);
     }
   }, [carPosition]);
 
-  const handlePointerClick = () => {
-    setCarPosition({ x: 57, y: 85 });
-  };
-
+  // useEffect for handling mint item sign-less - demo-specific logic
+  // This effect performs a sign-less minting operation after a delay when the modal is shown.
   useEffect(() => {
     if (showArrivalModal) {
       const timer = setTimeout(() => {
         console.log("Processing with Session Key");
 
-        // 非同期関数を定義
         const mintItem = async () => {
           openSnackbar(`セッションキーで自動処理を開始します`, "info");
           try {
             await handleMintItemSignLess();
           } catch (error) {
             console.error("Minting failed:", error);
-            // エラーがある場合はここでハンドリング
           }
         };
 
-        // 非同期関数を実行
         mintItem();
       }, 3000);
 
-      // クリーンアップ関数
       return () => clearTimeout(timer);
     }
   }, [showArrivalModal]);
-
-  // const handleStartSignLess = () => {
-  //   onClose();
-  //   setIsSignLess(true);
-  // };
-
-  const handleMintItemSignLess = async () => {
-    setLoading(true);
-    // console.log("Task start");
-    try {
-      const response = await signLessTx({
-        userState: userState,
-        targetContract: config.colorAddress,
-        abi: colorAbi,
-        to: userState.tba,
-        tokenId: [4],
-        amount: [1],
-      });
-      const status = await fetchGelatoRelayStatus(response);
-      console.log("Task succeeded:", status);
-      openSnackbar(`カラーNFTの取得に成功しました`, "success");
-      openSnackbar(
-        `アクティビティタスクの「アスターカラーNFTの入手」を達成しました! 🎉`,
-        "success"
-      );
-      setShowArrivalModal(false);
-    } catch (error) {
-      console.error("An error occurred:", error);
-      openSnackbar("カラーNFTの取得が失敗しました", "error");
-      setShowArrivalModal(false);
-    } finally {
-      setLoading(false);
-      onClose();
-    }
-  };
-
-  const handleStartSignLess = async () => {
-    const localStorage = new LocalStorage();
-    const _sessionId = localStorage.get(StorageKeys.SESSION_ID);
-    const _sessionKey = localStorage.get(StorageKeys.SESSION_KEY);
-    // console.log("Session Id:", _sessionId);
-    // console.log("Session Key:", _sessionKey);
-
-    // セッションIDまたはセッションキーが存在しない場合、新しいセッションを作成
-    if (!_sessionId || !_sessionKey) {
-      console.log("Task start");
-      try {
-        setLoading(true);
-        const response = await createSessionKeys({
-          userState: userState,
-          contractAddress: config.colorAddress,
-        });
-        const status = await fetchGelatoRelayStatus(response);
-        console.log("Task succeeded:", status);
-        openSnackbar(`セッションキーの作成に成功しました`, "success");
-      } catch (error) {
-        console.error("Error creating or fetching session keys:", error);
-        openSnackbar(`セッションキーの作成または取得に失敗しました`, "error");
-      } finally {
-        setLoading(false);
-        setIsSignLess(true);
-        onClose();
-      }
-      return;
-    }
-
-    // 既存のセッションの検証と必要に応じた更新
-    try {
-      const session = await getSessionKey({ userState: userState });
-      console.log("Session Key:", session);
-      const tempKey = new TempKey(_sessionKey);
-      const timestamp = Math.floor(Date.now() / 1000);
-
-      // セッションが無効な場合は更新
-      if (
-        tempKey.address !== session.tempPublicKey ||
-        timestamp > +session.end.toString() ||
-        userState.safe !== session.user
-      ) {
-        // console.log("SESSION KEYS");
-        openSnackbar(
-          `セッションキーが無効です。新しいキーを作成します。`,
-          "info"
-        );
-        setTimeout(async () => {
-          try {
-            await createSessionKeys({
-              userState: userState,
-              contractAddress: config.myCarAddress,
-            });
-          } catch (error) {
-            console.error("Error re-creating session keys:", error);
-            openSnackbar(`セッションキーの再作成に失敗しました`, "error");
-          }
-        }, 1000);
-      } else {
-        openSnackbar(`既存のセッションキーが有効です。`, "info");
-      }
-    } catch (error) {
-      console.error("Error validating or updating session:", error);
-      openSnackbar(`セッションキーの検証または更新に失敗しました`, "error");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <PrimaryLayout>

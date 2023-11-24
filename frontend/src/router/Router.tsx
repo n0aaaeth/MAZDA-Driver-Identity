@@ -1,49 +1,63 @@
-import { FC } from "react";
+import React, { FC } from "react";
+import { Navigate } from "react-router-dom";
+import { useRecoilValue } from "recoil";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Map } from "../pages/Map";
 import { Custom } from "../pages/Custom";
 import { Auth } from "../pages/Auth";
-import { StartSetup } from "../pages/StartSetup";
-import { CreateTBA } from "../pages/CreateTBA";
-import { GetColor } from "../pages/GetColor";
 import { Activity } from "../pages/Activity";
 import { Utility } from "../pages/Utility";
+import { Setup } from "../pages/Setup";
+import { web3StateAtom } from "../store/web3State";
 
-const routs: {
+type PrivateRouteProps = {
+  children: React.ReactNode;
+};
+
+const PrivateRoute: FC<PrivateRouteProps> = ({ children }: PrivateRouteProps) => {
+  const web3State = useRecoilValue(web3StateAtom);
+
+  if (!web3State.web3auth) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+const routes: {
   path: string;
-  element: JSX.Element;
+  element: React.ReactNode;
+  isPrivate?: boolean;
 }[] = [
   {
     path: "/auth",
     element: <Auth />,
+    isPrivate: false,
   },
   {
-    path: "/",
-    element: <StartSetup />,
-  },
-  {
-    path: "/create-tba",
-    element: <CreateTBA />,
-  },
-  {
-    path: "/get-color",
-    element: <GetColor/>,
+    path: "/setup",
+    element: <Setup />,
+    isPrivate: true,
   },
   {
     path: "/map",
     element: <Map />,
+    isPrivate: true,
   },
   {
     path: "/custom",
     element: <Custom />,
+    isPrivate: true,
   },
   {
     path: "/activity",
     element: <Activity />,
+    isPrivate: true,
   },
   {
     path: "/utility",
     element: <Utility />,
+    isPrivate: true,
   },
 ];
 
@@ -51,9 +65,17 @@ export const Router: FC = () => {
   return (
     <BrowserRouter>
       <Routes>
-        {routs.map((route) => {
-          return <Route key={route.path} path={route.path} element={route.element} />;
-        })}
+        {routes.map(({ path, element, isPrivate }) =>
+          isPrivate ? (
+            <Route
+              key={path}
+              path={path}
+              element={<PrivateRoute>{element}</PrivateRoute>}
+            />
+          ) : (
+            <Route key={path} path={path} element={element} />
+          )
+        )}
       </Routes>
     </BrowserRouter>
   );

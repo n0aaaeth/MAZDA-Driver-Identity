@@ -1,20 +1,18 @@
 import { atom } from "recoil";
-import { Signer, providers } from "ethers";
+import { providers } from "ethers";
 import { Web3Auth } from "@web3auth/modal";
 
-export const userStateAtom = atom<{
+export const web3StateAtom = atom<{
   signerAddress: string | null;
   provider: providers.Web3Provider | null;
-  signer: Signer | null;
   safe: string | undefined;
   web3auth: Web3Auth | null;
   tba: string;
 }>({
-  key: "userState",
+  key: "web3State",
   default: {
     signerAddress: "",
     provider: null,
-    signer: null,
     safe: "",
     web3auth: null,
     tba: ""

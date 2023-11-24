@@ -8,6 +8,7 @@ type Props = {
 };
 
 export const Providers: FC<Props> = ({ children }) => {
+
   return (
     <>
       <ThemeProvider theme={theme}>{children}</ThemeProvider>
