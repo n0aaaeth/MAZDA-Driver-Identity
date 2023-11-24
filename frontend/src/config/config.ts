@@ -5,7 +5,7 @@ export const config = {
     erc6551AccountAddress: "0x924f406F2A3cED38bd57b99C0439aC74C078d376",
     colorAddress: "0x6D5E1C92Bf95580230c3406FfE120780ff3E5F09",
     sessionModuleContract: "0x197dA1573AA8997aB241982e3a81Fd5F74B1bF74",
-    gelatoRelayApiKey: process.env.REACT_APP_GELATO_RELAY_API_KEY,
-    web3AuthClientId: process.env.REACT_APP_WEB3AUTH_CLIENT_ID
+    gelatoRelayApiKey: "<Your Gelato Relay API Key>",
+    web3AuthClientId: "<Your Web3Auth Client ID> "
   };
   
