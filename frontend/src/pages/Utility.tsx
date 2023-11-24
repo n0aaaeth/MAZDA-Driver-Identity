@@ -4,6 +4,16 @@ import { FC, useState } from "react";
 import { useDiscloser } from "../hooks/useDiscloser";
 import { PrimaryModal } from "../component/modal/PrimaryModal";
 
+type ImageClickParams = {
+  color: string;
+  image: string;
+};
+
+type SetAssetParamas = {
+  color: string;
+  image: string;
+};
+
 export const Utility: FC = () => {
   const [isOpen, onClose, onOpen] = useDiscloser(false);
   const [selectedColor, setSelectedColor] = useState({
@@ -15,7 +25,7 @@ export const Utility: FC = () => {
     image: selectedColor.image,
   });
 
-  const handleImageClick = (color: string, image: string) => {
+  const handleImageClick = ({ color, image }: ImageClickParams) => {
     setNewColor({
       color: color,
       image: image,
@@ -23,7 +33,7 @@ export const Utility: FC = () => {
     onOpen();
   };
 
-  const handleSetAsset = (color: string, image: string) => {
+  const handleSetAsset = ({ color, image }: SetAssetParamas) => {
     setSelectedColor({
       color: color,
       image: image,
@@ -78,7 +88,10 @@ export const Utility: FC = () => {
                 position="relative"
                 marginRight="15px"
                 onClick={() =>
-                  handleImageClick("Black", "../assets/color-black.png")
+                  handleImageClick({
+                    color: "Black",
+                    image: "../assets/item-icon.png",
+                  })
                 }
               >
                 <img
@@ -98,7 +111,12 @@ export const Utility: FC = () => {
         onClose={onClose}
         titleLabel="報酬を活用しますか？"
         buttonLabel="活用する（署名する）"
-        onSubmitClick={() => handleSetAsset(newColor.color, newColor.image)}
+        onSubmitClick={() =>
+          handleSetAsset({
+            color: newColor.color,
+            image: newColor.image,
+          })
+        }
       >
         <Box display="flex" alignItems="center">
           <img

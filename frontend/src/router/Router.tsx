@@ -1,5 +1,5 @@
-import React, { FC } from "react";
-import { Navigate } from "react-router-dom";
+import React, { FC, useEffect, useState } from "react";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Map } from "../pages/Map";
@@ -14,12 +14,17 @@ type PrivateRouteProps = {
   children: React.ReactNode;
 };
 
-const PrivateRoute: FC<PrivateRouteProps> = ({ children }: PrivateRouteProps) => {
+const PrivateRoute: FC<PrivateRouteProps> = ({
+  children,
+}: PrivateRouteProps) => {
   const web3State = useRecoilValue(web3StateAtom);
+  const navigate = useNavigate();
 
-  if (!web3State.web3auth) {
-    return <Navigate to="/auth" replace />;
-  }
+  useEffect(() => {
+    if (!web3State.web3auth) {
+      navigate("/auth");
+    } 
+  }, [web3State.web3auth]);
 
   return <>{children}</>;
 };

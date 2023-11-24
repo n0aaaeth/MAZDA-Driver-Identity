@@ -8,7 +8,7 @@ import {
     ERC2771Context
 } from "@gelatonetwork/relay-context/contracts/vendor/ERC2771Context.sol";
 
-contract ERC6551Registry is IERC6551MRegistry, ERC2771Context {
+contract ERC6551MRegistry is IERC6551MRegistry, ERC2771Context {
     error InitializationFailed();
 
     constructor(address _trustedForwarder)

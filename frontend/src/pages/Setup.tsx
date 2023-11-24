@@ -180,7 +180,6 @@ export const Setup: FC = () => {
         contractAddress: config.colorAddress,
         tokenId: [1, 2, 3],
       });
-      // console.log(isSet)
       if (isSet) {
         openSnackbar(`車体のボディーカラーNFTの装着に成功しました`, "success");
       }
@@ -225,7 +224,7 @@ export const Setup: FC = () => {
         </Typography>
         <img
           src="../assets/astar-logo.png"
-          alt="Astar"
+          alt="astar logo"
           style={{
             height: "30px",
           }}
@@ -238,7 +237,7 @@ export const Setup: FC = () => {
           height: 75,
           width: 200,
         }}
-        alt="MAZDA car"
+        alt="car black"
         src="../assets/car-black.png"
       />
       <Typography
@@ -256,7 +255,7 @@ export const Setup: FC = () => {
         variant="contained"
         sx={{
           border: "1px solid #929292",
-          color: "#929292",
+          color: "secondary.light",
           width: "280px",
           height: "45px",
           borderRadius: "0px",

@@ -1,51 +1,23 @@
 import { Box, Button, Chip, Paper, Typography } from "@mui/material";
-import { FC, useState, useMemo } from "react";
+import { FC, useMemo } from "react";
 import { PrimaryLayout } from "../component/layout/PrimaryLayout";
 import { useDiscloser } from "../hooks/useDiscloser";
 import { PrimaryModal } from "../component/modal/PrimaryModal";
 import { useNavigate } from "react-router-dom";
 
-const typographyStyle = {
-  color: "primary.main",
-  fontFamily: "Mazda Type Regular",
-  fontSize: "16px",
+type AchievementState = {
+  title: string;
+  isAchieved: boolean;
 };
 
-const NFTPaper = ({ title, achieved, onOpen }: any) => (
-  <Paper sx={{ mb: 2, p: 2, position: "relative" }}>
-    <Typography variant="h6" sx={typographyStyle}>
-      {title}
-    </Typography>
-    <Chip
-      label={achieved ? "達成済み" : "未達成"}
-      sx={{
-        position: "absolute",
-        top: 5,
-        right: 5,
-        color: achieved ? "green" : "red",
-        bgcolor: "white",
-        fontWeight: 600,
-      }}
-    />
-    <Button
-      variant={achieved ? "contained" : "outlined"}
-      fullWidth
-      disabled={!achieved}
-      sx={{ mt: 2 }}
-      onClick={onOpen}
-    >
-      報酬を受け取る
-    </Button>
-  </Paper>
-);
+const achievements: AchievementState[] = [
+  { title: "アスターカラーNFTを入手", isAchieved: true },
+  { title: "ホイールNFT①を入手", isAchieved: false },
+  { title: "ホイールNFT②を入手", isAchieved: false },
+];
 
 export const Activity: FC = () => {
   const [isOpen, onClose, onOpen] = useDiscloser(false);
-  const [achievements, setAchievements] = useState([
-    { title: "アスターカラーNFTを入手", isAchieved: true },
-    { title: "ホイールNFT①を入手", isAchieved: false },
-    { title: "ホイールNFT②を入手", isAchieved: false },
-  ]);
   const navigate = useNavigate();
 
   const renderNFTPapers = useMemo(
@@ -121,3 +93,48 @@ export const Activity: FC = () => {
     </PrimaryLayout>
   );
 };
+
+type NFTPaperProps = {
+  title: string;
+  achieved: boolean;
+  onOpen: () => void;
+};
+
+const NFTPaper: FC<NFTPaperProps> = ({
+  title,
+  achieved,
+  onOpen,
+}: NFTPaperProps) => (
+  <Paper sx={{ mb: 2, p: 2, position: "relative" }}>
+    <Typography
+      variant="h6"
+      sx={{
+        color: "primary.main",
+        fontFamily: "Mazda Type Regular",
+        fontSize: "16px",
+      }}
+    >
+      {title}
+    </Typography>
+    <Chip
+      label={achieved ? "達成済み" : "未達成"}
+      sx={{
+        position: "absolute",
+        top: 5,
+        right: 5,
+        color: achieved ? "green" : "red",
+        bgcolor: "white",
+        fontWeight: 600,
+      }}
+    />
+    <Button
+      variant={achieved ? "contained" : "outlined"}
+      fullWidth
+      disabled={!achieved}
+      sx={{ mt: 2 }}
+      onClick={onOpen}
+    >
+      報酬を受け取る
+    </Button>
+  </Paper>
+);

@@ -46,10 +46,9 @@ export const Auth: FC = () => {
 
       const web3authProvider = await web3auth!.connect();
       const provider = new ethers.providers.Web3Provider(web3authProvider!);
-      updateUserInfo(provider, web3auth);
+      await updateUserInfo(provider, web3auth);
       // const user = await web3auth!.getUserInfo();
       // console.log(":", user);
-
       navigate("/setup");
       return;
     } catch (error) {

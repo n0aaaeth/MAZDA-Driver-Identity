@@ -215,7 +215,7 @@ export const Map: FC = () => {
           width: "100vw",
           height: "100vh",
           overflow: "hidden",
-          backgroundColor: "#000",
+          backgroundColor: "primary.black",
         }}
       >
         <Box
@@ -229,7 +229,7 @@ export const Map: FC = () => {
             transform: "translate(-50%, -50%)",
           }}
         >
-          <img src="../assets/map.png" alt="Map" style={{ maxWidth: "100%" }} />
+          <img src="../assets/map.png" alt="map" style={{ maxWidth: "100%" }} />
           {isSignLess && (
             <Box
               sx={{
@@ -275,7 +275,7 @@ export const Map: FC = () => {
             <img
               ref={markerRef}
               src="../assets/car-cursor.png"
-              alt="Car"
+              alt="car cursor"
               style={{ width: "40px", height: "40px" }}
             />
           </div>
@@ -304,7 +304,7 @@ export const Map: FC = () => {
       >
         <img
           src="../assets/color-astar.png"
-          alt="Item"
+          alt="color astar"
           style={{
             height: "90px",
           }}

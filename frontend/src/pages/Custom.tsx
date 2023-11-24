@@ -191,7 +191,7 @@ export const Custom: FC = () => {
               >
                 <img
                   src="../assets/color-black.png"
-                  alt="Astar"
+                  alt="color black"
                   style={{
                     height: "50px",
                     borderRadius:
@@ -212,7 +212,7 @@ export const Custom: FC = () => {
               >
                 <img
                   src="../assets/color-navy.png"
-                  alt="Astar"
+                  alt="color navy"
                   style={{
                     height: "50px",
                     borderRadius:
@@ -233,7 +233,7 @@ export const Custom: FC = () => {
               >
                 <img
                   src="../assets/color-red.png"
-                  alt="Astar"
+                  alt="color red"
                   style={{
                     height: "50px",
                     borderRadius: selectedColor.color === "Red" ? "50%" : "4px",
@@ -251,7 +251,7 @@ export const Custom: FC = () => {
               >
                 <img
                   src="../assets/color-astar.png"
-                  alt="Astar"
+                  alt="color astar"
                   style={{
                     height: "50px",
                   }}
@@ -297,7 +297,7 @@ export const Custom: FC = () => {
               <Box position="relative" marginRight="15px">
                 <img
                   src="../assets/wheel-type1.png"
-                  alt="Astar"
+                  alt="wheel 1"
                   style={{
                     height: "70px",
                   }}
@@ -325,8 +325,8 @@ export const Custom: FC = () => {
               </Box>
               <Box position="relative" marginRight="15px">
                 <img
-                  src="../assets/wheel-type1.png"
-                  alt="Astar"
+                  src="../assets/wheel-type2.png"
+                  alt="wheel 2"
                   style={{
                     height: "70px",
                   }}

@@ -18,7 +18,7 @@ import {
     ERC2771Context
 } from "@gelatonetwork/relay-context/contracts/vendor/ERC2771Context.sol";
 
-contract ERC6551Account is IERC165, IERC1271, IERC6551MAccount, ERC2771Context  {
+contract ERC6551MAccount is IERC165, IERC1271, IERC6551MAccount, ERC2771Context  {
     uint256 public nonce;
 
     mapping(address => mapping(uint256 => bool)) public asset;
