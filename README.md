@@ -3,7 +3,7 @@
 ![img3](https://raw.githubusercontent.com/n0aaaeth/MAZDA-Driver-Identity/main/images/img3.png)
 ![img4](https://raw.githubusercontent.com/n0aaaeth/MAZDA-Driver-Identity/main/images/img4.png)
 
-## 特徴①：ERC6551M
+## 特徴 ①：ERC6551M
 
 #### ERC6551M 概要
 ERC6551を活用したDynamic NFTの開発に最適化されたERC規格を独自実装。この規格を活用することで、TBA内のNFTに「有効/無効」の状態フラグを設定し、オンチェーンでその状態を容易に確認が可能。ERC721とERC1155規格に準拠し、後方互換性を維持しつつ、アセットの装着状態を効率的に管理できる。
@@ -20,7 +20,7 @@ ERC6551を活用したDynamic NFTの開発に最適化されたERC規格を独�
 
 
 
-## 特徴②：SessionKey 
+## 特徴 ②：SessionKey 
 
 #### Session Key 概要
 ユーザーが指定したトランザクションのみを実行し、セッション期間を通じて限定されたアクションを可能にするSessionKeyModuleを実装。これにより、ユーザーの予期しないトランザクションの実行を防ぎつつ、トランザクションごとの署名プロセスを簡素化し、安全性と利便性の両方を確保することが可能。
