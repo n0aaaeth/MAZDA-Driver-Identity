@@ -7,7 +7,7 @@ import { Notification } from "../component/notification/Notification";
 import { config } from "../config/config";
 import { getGelatoRelayStatus } from "../services/getGelatoRelayStatus";
 import { useRecoilValue } from "recoil";
-import { createSessionKeys } from "../services/createSessionKeys";
+import { createSessionKey } from "../services/createSessionKey";
 import { TempKey } from "../session/TempKey";
 import { getSessionKey } from "../services/getSessionKey";
 import { StorageKeys } from "../session/storage/storage-keys";
@@ -84,7 +84,7 @@ export const Map: FC = () => {
       console.log("Task start");
       try {
         setLoading(true);
-        const response = await createSessionKeys({
+        const response = await createSessionKey({
           provider: web3State.provider,
           safe: web3State.safe,
           contractAddress: config.colorAddress,
@@ -122,7 +122,7 @@ export const Map: FC = () => {
         );
         setTimeout(async () => {
           try {
-            await createSessionKeys({
+            await createSessionKey({
               provider: web3State.provider,
               safe: web3State.safe,
               contractAddress: config.colorAddress,

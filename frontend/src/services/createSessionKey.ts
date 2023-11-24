@@ -15,7 +15,7 @@ type CreateSessionKeyParams =  {
   contractAddress: string;
 }
 
-export const createSessionKeys = async({
+export const createSessionKey = async({
   provider,
   safe,
   contractAddress,
