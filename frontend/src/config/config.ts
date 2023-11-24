@@ -8,3 +8,6 @@ export const config = {
     gelatoRelayApiKey: "<Your Gelato Relay API Key>",
     web3AuthClientId: "<Your Web3Auth Client ID> "
   };
+
+
+  
