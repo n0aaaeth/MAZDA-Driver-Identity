@@ -5,7 +5,7 @@
 
 ## ⛓ 構築環境（ブロックチェーン）
 Astar zkEVM (zKatana)
-![img7](https://raw.githubusercontent.com/n0aaaeth/MAZDA-Driver-Identity/main/images/img7.png)
+![img8](https://raw.githubusercontent.com/n0aaaeth/MAZDA-Driver-Identity/main/images/img8.png)
 
 ## 🤖 プロダクト解説
 https://www.youtube.com/watch?v=vV0Q_-RLq3E
