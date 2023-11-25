@@ -1,6 +1,13 @@
-#MAZDA Driver Identity
+# MAZDA Driver Identity
+![img6](https://raw.githubusercontent.com/n0aaaeth/MAZDA-Driver-Identity/main/images/img6.png)
 ![img3](https://raw.githubusercontent.com/n0aaaeth/MAZDA-Driver-Identity/main/images/img3.png)
 ![img4](https://raw.githubusercontent.com/n0aaaeth/MAZDA-Driver-Identity/main/images/img4.png)
+
+## 🤖 プロダクト解説
+https://www.youtube.com/watch?v=vV0Q_-RLq3E
+
+## 🤖 デモ
+
 
 ## 🖥 特徴①：ERC6551M
 
@@ -8,7 +15,7 @@
 ERC6551を活用したDynamic NFTの開発に最適化されたERC規格を独自実装。この規格を活用することで、TBA内のNFTに「有効/無効」の状態フラグを設定し、オンチェーンでその状態を容易に確認が可能。ERC721とERC1155規格に準拠し、後方互換性を維持しつつ、アセットの装着状態を効率的に管理できる。
 
 #### 技術的特徴
-- **アセットの装着状況の選択的開示**: ユーザーは自身のアセットの装着状態をDapp間で選択的に公開し、状態の共有及び同期を行うことが可能
+- **アセットの装着状況の選択的開示**: ユーザーは自身のアセット装着状態をDapp間で選択的に公開し、状態の共有及び同期を行うことが可能
 - **メタトランザクション対応**: メタトランザクションを通じて、ユーザーはガス代を気にすることなくトランザクションを行うことが可能
 
 #### 提供価値
@@ -30,7 +37,10 @@ ERC6551を活用したDynamic NFTの開発に最適化されたERC規格を独�
 - **メタトランザクション対応**: メタトランザクションを通じてセッションキーの作成が簡略化され、ユーザーはガス代の心配なくセッションを開始できる
 
 #### 提供価値
-- **セキュリティ向上**：　ユーザー自身が事前に許可したトランザクションの範囲内でのみ操作を許可し、予期しないトランザクションの実行を防ぐ
-- **ユーザー体験の簡素化**：　ユーザーは毎回のトランザクションごとに署名を行う必要がなくなり、ユーザーエクスペリエンスが簡素化される
+- **セキュアでシームレスなトランザクション管理**：　ユーザー自身が事前に許可したトランザクションの範囲内でのみ操作を許可し、予期しないトランザクションの実行を防ぐ
+- **ユーザー体験の簡素化**：　ユーザーは毎回のトランザクションごとに署名を行う必要がなくなりUXが簡素化される（トランザクションの手間を削減）
 
 ![img1](https://raw.githubusercontent.com/n0aaaeth/MAZDA-Driver-Identity/main/images/img1.png)
+
+
+
