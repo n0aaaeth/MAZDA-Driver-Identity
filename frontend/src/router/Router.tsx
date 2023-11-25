@@ -40,7 +40,7 @@ const routes: {
     isPrivate: false,
   },
   {
-    path: "/setup",
+    path: "/",
     element: <Setup />,
     isPrivate: true,
   },

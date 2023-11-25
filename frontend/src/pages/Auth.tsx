@@ -49,7 +49,7 @@ export const Auth: FC = () => {
       await updateUserInfo(provider, web3auth);
       // const user = await web3auth!.getUserInfo();
       // console.log(":", user);
-      navigate("/setup");
+      navigate("/");
       return;
     } catch (error) {
       console.error("Login failed:", error);
