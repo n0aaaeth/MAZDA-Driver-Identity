@@ -7,7 +7,7 @@
 https://www.youtube.com/watch?v=vV0Q_-RLq3E
 
 ## 💡 デモ
-https://youtu.be/9odBN0RTLKk
+https://youtu.be/upj7EN2gNzU
 
 ## 🖥 特徴①：ERC6551M
 https://zkatana.blockscout.com/address/0x924f406F2A3cED38bd57b99C0439aC74C078d376?tab=internal_txns
@@ -24,7 +24,6 @@ ERC6551を活用したDynamic NFTの開発に最適化されたERC規格を独�
 - **Dapp間の相互運用性**: ERC6551Mを活用することで、異なるDapp間でユーザー自身のアセットの装着状況を共有できるため、Dapp間を横断したUXの実現が可能
 
 ![img2](https://raw.githubusercontent.com/n0aaaeth/MAZDA-Driver-Identity/main/images/img2.png)
-
 
 
 ## 🖥 特徴②：SessionKey 
