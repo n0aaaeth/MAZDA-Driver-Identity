@@ -21,7 +21,7 @@ ERC6551を活用したDynamic NFTの開発に最適化されたERC規格を独�
 
 #### 提供価値
 - **ユーザビリティ**: メタトランザクションを利用することで、ガス代の心配なしにアセットの状態を容易に変更できる
-- **Dapp間の相互運用性**: ERC6551Mを活用することで、異なるDapp間でユーザー自身のTBAとそのアセット装着状態をリアルタイムに共有でき、Dapp間を横断した装着状態に応じたUXの提供などが可能
+- **Dapp間の相互運用性**: ERC6551Mを活用することで、異なるDapp間でユーザー自身のTBAとそのアセット装着状態をリアルタイムに共有でき、Dapp間を横断したUXの提供が可能
 
 ![img2](https://raw.githubusercontent.com/n0aaaeth/MAZDA-Driver-Identity/main/images/img2.png)
 
