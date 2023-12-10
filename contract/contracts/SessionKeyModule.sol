@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.12;
 
-import "./BytesLib.sol";
 import { IAutomate } from "./interfaces/IAutomate.sol";
 import { IOpsProxyFactory } from "./interfaces/IOpsProxyFactory.sol";
 import { ISafe } from "./interfaces/ISafe.sol";
@@ -9,6 +8,7 @@ import { IMultiSend } from "./interfaces/IMultiSend.sol";
 import {
     ERC2771Context
 } from "@gelatonetwork/relay-context/contracts/vendor/ERC2771Context.sol";
+import "./libs/BytesLib.sol";
 
 contract SessionKeyModule is ERC2771Context {
     using BytesLib for bytes;
